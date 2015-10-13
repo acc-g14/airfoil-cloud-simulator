@@ -15,7 +15,7 @@ class WorkerManager:
         This method tries to the set the available workers num;
         either by initializing or deleting workers.
 
-        :param num: int Number of workers
+        :param int num: Number of workers
         """
         pass
 
