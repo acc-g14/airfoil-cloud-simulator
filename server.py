@@ -1,6 +1,13 @@
 from flask import Flask
+from server.DefaultComputeManager import DefaultComputeManager
+from server.DefaultWorkerManager import DefaultWorkerManager
+from storage.KeyValueCache import KeyValueCache
 
 app = Flask(__name__)
+
+kv_storage = KeyValueCache()
+comp_manager = DefaultComputeManager(kv_storage)
+worker_manager = DefaultWorkerManager()
 
 
 @app.route("/job", methods=['PUT'])

@@ -1,4 +1,4 @@
-from server.WorkerManager import WorkerManager
+from WorkerManager import WorkerManager
 
 
 class DefaultWorkerManager(WorkerManager):

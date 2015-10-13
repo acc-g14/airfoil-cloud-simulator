@@ -1,14 +1,22 @@
 import abc
 from uuid import UUID
+from storage.Storage import Storage
 
 
 class ComputeManager:
+
     """
     This class handles all tasks computation-specific, like starting or stopping a
     computation or get the result or status for a specific job.
     """
 
-    def __init__(self):
+    def __init__(self, storage):
+        """
+        Init the manager with the given storage engine.
+        :param Storage storage: Storage
+        :return: void
+        """
+        self._storage = storage
         pass
 
     @abc.abstractmethod
