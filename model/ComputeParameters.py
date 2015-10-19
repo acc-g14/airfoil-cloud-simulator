@@ -13,4 +13,3 @@ class ComputeParameters:
         self.viscosity = None
         self.speed = None
         self.time = None
-        self.xml_file = None

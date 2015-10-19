@@ -13,4 +13,3 @@ class ModelParameters:
         self.angle = None
         self.num_nodes = None
         self.refinement_level = None
-        self.output_filename = None
