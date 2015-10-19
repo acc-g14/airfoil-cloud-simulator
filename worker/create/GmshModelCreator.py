@@ -9,28 +9,26 @@ class GmshModelCreator(ModelCreator):
     def create_model(self, params):
         """
         Creates a gmsh model based on given parameters.
-        :param model.ComputeParameters.ComputeParameters params: ComputeParameters
-        :return: str - filename
+        :param model.ModelParameters.ModelParameters params: ModelParameters
+        :return: void
         """
         xs = np.linspace(0.0, 1.0, params.num_nodes)
         x, y = self._naca4(params.naca4[0],
-                     params.naca4[1],
-                     params.naca4[2],
-                     params.naca4[3], xs)
+                           params.naca4[1],
+                           params.naca4[2],
+                           params.naca4[3], xs)
 
         xa, ya = self._rot(x, y, params.angle)
 
-        geo_filename = "a" + str(params.angle) + "tmp.geo"
+        geo_filename = "a" + str(params.angle) + ".geo"
         msh_filename = "a" + str(params.angle) + ".msh"
         self._dat2gmsh(xa, ya, open(geo_filename, "w+"))
 
         create_gmsh_command = "gmsh -v 0 -nopopup -2 -o " + msh_filename + " " + geo_filename
         refine_gmsh_command = "gmsh -refine -v 0 " + msh_filename
         call(create_gmsh_command.split())
-        print("created gmsh")
         for i in xrange(0, params.refinement_level):
             call(refine_gmsh_command.split())
-            print("refined gmsh")
             
         return msh_filename
 

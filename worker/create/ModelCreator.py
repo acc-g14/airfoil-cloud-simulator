@@ -13,7 +13,7 @@ class ModelCreator:
     def create_model(self, params):
         """
         Method that creates a model based on the passed parameters
-        :param model.ComputeParameters.ComputeParameters params: ComputeParameters
+        :param model.ModelParameters.ModelParameters params: ModelParameters
         :return:
         """
         pass
