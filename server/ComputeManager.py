@@ -19,12 +19,11 @@ class ComputeManager(object):
         pass
 
     @abc.abstractmethod
-    def start_computation(self, model_params, compute_params):
+    def start_computation(self, user_params):
         """
         This method starts the computation with the defined parameters.
 
-        :param model.ModelParameters.ModelParameters model_params: ModelParameters
-        :param model.ComputeParameters.ComputeParameters compute_params: ComputeParameters
+        :param model.UserParameters.UserParameters user_params: UserParameters
         :rtype : UUID
         """
         return
