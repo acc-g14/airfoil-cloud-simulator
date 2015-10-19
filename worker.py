@@ -12,9 +12,12 @@ computation = AirfoilComputation()
 
 
 @app.task()
-def simulate_airfoil(params):
+def simulate_airfoil(modelParams, computeParams):
     """
-
     :param model.ComputeParameters.ComputeParameters params: ComputeParameters
     """
-    return
+    msh_file = creator.create_model(modelParams)
+    xml_file = converter.convert(modelParams.output_filename)
+    result = computation.perform_computation(computeParams, xml_file)
+    
+    return result
