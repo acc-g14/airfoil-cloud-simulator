@@ -1,5 +1,5 @@
 from worker.convert.Converter import Converter
-
+from subprocess import call
 
 class GmshDolfinConverter(Converter):
     """
@@ -7,4 +7,8 @@ class GmshDolfinConverter(Converter):
     """
 
     def convert(self, f):
-        pass
+        dotIndex = f.rindex(".msh")
+        xmlFileName = f[:dotIndex] + ".xml"
+        command = "dolfin-convert " + f + " " + xmlFileName
+        call(command.split())
+        return xmlFileName
