@@ -23,8 +23,15 @@ class GmshModelCreator(ModelCreator):
         geo_filename = "a" + str(params.angle) + "tmp.geo"
         msh_filename = "a" + str(params.angle) + ".msh"
         self._dat2gmsh(xa, ya, open(geo_filename, "w+"))
-        
-        call(["gmsh", "-v", "0", "-nopopup", "-2", "-o", msh_filename, geo_filename])
+
+        create_gmsh_command = "gmsh -v 0 -nopopup -2 -o " + msh_filename + " " + geo_filename
+        refine_gmsh_command = "gmsh -refine -v 0 " + msh_filename
+        call(create_gmsh_command.split())
+        print("created gmsh")
+        for i in xrange(0, params.refinement_level):
+            call(refine_gmsh_command.split())
+            print("refined gmsh")
+            
         return msh_filename
 
     def _rot(self, x, y, a):
