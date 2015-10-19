@@ -7,7 +7,7 @@ class GmshDolfinConverter(Converter):
     """
 
     def convert(self, f):
-        dotIndex = f.rindex(".msh")
+        dotIndex = f.rindex(".msh") #will throw exception if .msh is not found
         xmlFileName = f[:dotIndex] + ".xml"
         command = "dolfin-convert " + f + " " + xmlFileName
         call(command.split())
