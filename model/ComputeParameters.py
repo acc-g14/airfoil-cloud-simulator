@@ -12,5 +12,9 @@ class ComputeParameters:
         self.naca4 = None
         self.job = None
         self.angle = None
-        self.numNodes = None
-        self.refinementLevel = None
+        self.num_nodes = None
+        self.refinement_level = None
+        self.navier_num_samples = None
+        self.navier_viscosity = None
+        self.navier_speed = None
+        self.navier_time = None
