@@ -2,7 +2,7 @@ import abc
 from uuid import UUID
 
 
-class ComputeManager:
+class ComputeManager(object):
 
     """
     This class handles all tasks computation-specific, like starting or stopping a
@@ -19,11 +19,12 @@ class ComputeManager:
         pass
 
     @abc.abstractmethod
-    def start_computation(self, params):
+    def start_computation(self, model_params, compute_params):
         """
         This method starts the computation with the defined parameters.
 
-        :param model.ComputeParameters.ComputeParameters params: ComputeParameters
+        :param model.ModelParameters.ModelParameters model_params: ModelParameters
+        :param model.ComputeParameters.ComputeParameters compute_params: ComputeParameters
         :rtype : UUID
         """
         return
