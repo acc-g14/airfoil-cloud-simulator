@@ -18,7 +18,9 @@
 		preText["viscosity"] = "Simulation viscosity";
 		preText["speed"] = "Simulation speed";
 		preText["time"] = "Simulation time";
-		
+
+		var jobId = "";
+
 		function clearArea(id, message) {
 			if ($(id).val() == message) {
 				$(id).val("");
@@ -51,12 +53,12 @@
 				
 				$("#airfoil-form").remove();
 				
-				var job = $.post( "job", data );
+		                var job = $.post( "job", data );
  
- 		 		// Put the results in a div
 				job.done(function( data ) {
-					$("#content").append(data.job_id + " {<div id='jsonDiv'></div>}");
-					setTimeout(updateJobResult, 100);
+		                        jobId = data.job_id
+		                        $("#content").append("<pre id='jsonDiv'></pre>");
+					updateJobResult();
 				});
 				
 				return false;
@@ -65,8 +67,12 @@
 		});
 		
 		function updateJobResult() {
-			$("#jsonDiv").append("a ");
-			setTimeout(updateJobResult, 100);
+		        var jobResult = $.get( "job/" + jobId + "/result");
+ 
+		        jobResult.done(function( data ) {
+		              $("#jsonDiv").html(jobId + " " + JSON.stringify(data, null, 4));
+		              setTimeout(updateJobResult, 100);
+		        });
 		}
 		
 		function createClojure(k, v, f) {
