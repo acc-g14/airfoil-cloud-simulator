@@ -7,17 +7,18 @@ class Storage:
         pass
 
     @abc.abstractmethod
-    def generate_hash(self, params):
+    def generate_hash(self, model_params, compute_params):
         """
         This method generates a hash out of the parameters, which
         should be unique for a specific set of parameters.
 
-        :param params: Parameters to generate hash for.
+        :param model.ModelParameters.ModelParameters model_params: ModelParameters
+        :param model.ComputeParameters.ComputeParameters compute_params: ComputeParameters
         """
         return
 
     @abc.abstractmethod
-    def save_result(self, params, result):
+    def save_result(self, model_params, compute_params, result):
         """
         This method stores the result identified by the parameters to the storage.
 
@@ -28,7 +29,7 @@ class Storage:
         return
 
     @abc.abstractmethod
-    def has_result(self, params):
+    def has_result(self, model_params, compute_params):
         """
         This method returns whether for the set of parameters passed an entry is found.
 
@@ -38,7 +39,7 @@ class Storage:
         return
 
     @abc.abstractmethod
-    def get_result(self, params):
+    def get_result(self, model_params, compute_params):
         """
         Returns the result associated with the set of parameters, None otherwise.
 
