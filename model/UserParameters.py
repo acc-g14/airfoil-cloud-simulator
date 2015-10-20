@@ -14,7 +14,7 @@ class UserParameters:
         self.maxAngle = 90
         self.step = 10
         self.numNodes = 200
-        self.refinementLevel = 1
+        self.refinementLevel = 0
         self.num_samples = 2
         self.viscosity = 0.0001
         self.speed = 10
