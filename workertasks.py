@@ -4,7 +4,7 @@ from worker.compute.AirfoilComputation import AirfoilComputation
 from worker.convert.GmshDolfinConverter import GmshDolfinConverter
 from worker.create.GmshModelCreator import GmshModelCreator
 
-app = Celery()
+app = Celery('tasks', backend='amqp', broker='amqp://')
 
 creator = GmshModelCreator()
 converter = GmshDolfinConverter()

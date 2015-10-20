@@ -18,33 +18,37 @@ class DefaultComputeManager(ComputeManager):
         self._jobs = {}
 
     def stop_computation(self, job_id):
-        try:
-            job = self._jobs.get(job_id)
-        except KeyError:
+        job = self._jobs.get(job_id)
+        if job is None:
             raise ComputationException("No valid key specified")
-        # TODO
+        # TODO: implement!
         pass
 
     def get_status(self, job_id):
-        try:
             job = self._jobs.get(job_id)
+
+            if job is None:
+                raise ComputationException("No valid key specified")
+
             tasks_ready = 0
             tasks_total = len(job.tasks)
             for task in job.tasks:
-                if task['task'].ready():
-                    task['result'] = task['task'].result
+                if task.finished:
                     tasks_ready += 1
-                else:
-                    print "task not ready"
+                if task.workertask.ready():
+                    task.result = task.workertask.result
+                    tasks_ready += 1
+
             return {"tasks_ready": tasks_ready,
                     "tasks_total": tasks_total,
                     "finished": tasks_ready == tasks_total}
-        except KeyError:
-            raise ComputationException("No valid key specified")
 
     def get_result(self, job_id):
-        try:
             job = self._jobs.get(job_id)
+
+            if job is None:
+                raise ComputationException("No valid key specified")
+
             taskresults = []
             finished_tasks = 0
             total_tasks = len(job.tasks)
@@ -58,15 +62,10 @@ class DefaultComputeManager(ComputeManager):
                     task.result = task.workertask.result
                     taskresults.append(task)
                     finished_tasks += 1
-                else:
-                    pass
+
             return {"finished_tasks": finished_tasks,
                     "total_tasks": total_tasks,
                     "results": taskresults}
-        except KeyError:
-            raise ComputationException("No valid key specified")
-        # TODO
-        pass
 
     def start_computation(self, user_params):
         """
@@ -79,10 +78,9 @@ class DefaultComputeManager(ComputeManager):
         tasks = self._convert_user_params_to_tasks(user_params, job_id)
         tasklist = []
         for task in tasks:
-            workertask = workertasks.simulate_airfoil.delay(task["model_parameters"], task["compute_parameters"])
+            workertask = workertasks.simulate_airfoil.delay(task.model_params, task.compute_params)
             task.workertask = workertask
             task.id = workertask.id
-            print workertask.id
             tasklist.append(task)
         self._jobs[str(job_id)] = Job(job_id, tasklist)
         return job_id
