@@ -12,7 +12,7 @@ class AirfoilComputation(Computation):
         """
         Calls the airfoil binary with the given parameters. When the simulation is complete the results in drag_ligt.m is averaged and returned as a dictionary.
         """
-        call(["./airfoil", 
+        call(["./worker/airfoil", 
               str(params.num_samples), 
               str(params.viscosity),
               str(params.speed),
