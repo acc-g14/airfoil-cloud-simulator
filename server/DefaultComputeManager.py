@@ -21,7 +21,8 @@ class DefaultComputeManager(ComputeManager):
         job = self._jobs.get(job_id)
         if job is None:
             raise ComputationException("No valid key specified")
-        # TODO: implement!
+        for task in job.tasks:
+            task.workertask.revoke()
         pass
 
     def get_status(self, job_id):

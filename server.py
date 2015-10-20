@@ -22,7 +22,8 @@ def create_job():
 
 @app.route("/job/<job_id>", methods=['DELETE'])
 def delete_job(job_id):
-    pass
+    comp_manager.stop_computation(job_id)
+    return True
 
 
 @app.route("/job/<job_id>/status")
