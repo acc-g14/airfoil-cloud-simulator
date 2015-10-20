@@ -9,8 +9,9 @@ class AirfoilComputation(Computation):
     """
 
     def perform_computation(self, params, file_name):
-        #airfoil_command = "./airfoil 1 0.0001 10 1 a0.xml"
-        #call(airfoil_command.split())
+        """
+        Calls the airfoil binary with the given parameters. When the simulation is complete the results in drag_ligt.m is averaged and returned as a dictionary.
+        """
         call(["./airfoil", 
               str(params.num_samples), 
               str(params.viscosity),
@@ -24,6 +25,9 @@ class AirfoilComputation(Computation):
         return {"lift": avr_lift, "drag": avr_drag}
 
     def _read_tsv(self, file_name):
+        """
+        Reads the content of a tsv file and returns it as an array.
+        """
         with open(file_name) as tsvfile:
             tsvreader = csv.reader(tsvfile, delimiter = "\t")
             file_content = None
