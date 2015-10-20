@@ -9,13 +9,13 @@ class UserParameters:
         """
             initialize variables
         """
-        self.naca4 = None
+        self.naca4 = [0, 0, 1, 2]
         self.minAngle = 0
         self.maxAngle = 90
-        self.step = 1
-        self.numNodes = None
-        self.refinementLevel = None
-        self.num_samples = None
-        self.viscosity = None
-        self.speed = None
-        self.time = None
+        self.step = 10
+        self.numNodes = 200
+        self.refinementLevel = 1
+        self.num_samples = 2
+        self.viscosity = 0.0001
+        self.speed = 10
+        self.time = 0.1

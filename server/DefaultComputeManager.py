@@ -35,7 +35,7 @@ class DefaultComputeManager(ComputeManager):
             for task in job.tasks:
                 if task.finished:
                     tasks_ready += 1
-                if task.workertask.ready():
+                elif task.workertask.ready():
                     task.result = task.workertask.result
                     tasks_ready += 1
 
@@ -55,12 +55,12 @@ class DefaultComputeManager(ComputeManager):
             for task in job.tasks:
                 if task.finished:
                     # result already associated with task
-                    taskresults.append(task)
+                    taskresults.append(task.result)
                     finished_tasks += 1
                 elif task.workertask.ready():
                     task.finished = True
                     task.result = task.workertask.result
-                    taskresults.append(task)
+                    taskresults.append(task.result)
                     finished_tasks += 1
 
             return {"finished_tasks": finished_tasks,
@@ -78,6 +78,7 @@ class DefaultComputeManager(ComputeManager):
         tasks = self._convert_user_params_to_tasks(user_params, job_id)
         tasklist = []
         for task in tasks:
+            print task
             workertask = workertasks.simulate_airfoil.delay(task.model_params, task.compute_params)
             task.workertask = workertask
             task.id = workertask.id
