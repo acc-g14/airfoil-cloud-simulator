@@ -4,12 +4,12 @@ class ComputeParameters:
     """
         Class holding the parameters for the computation using the airfoil binary.
     """
-    def __init__(self):
+    def __init__(self, num_samples=None, viscosity=None, speed=None, time=None):
         """
         Initialize instance variables (eventually with default values).
         :return: void
         """
-        self.num_samples = None
-        self.viscosity = None
-        self.speed = None
-        self.time = None
+        self.num_samples = num_samples
+        self.viscosity = viscosity
+        self.speed = speed
+        self.time = time
