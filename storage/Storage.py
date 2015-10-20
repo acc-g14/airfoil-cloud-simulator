@@ -22,7 +22,8 @@ class Storage:
         """
         This method stores the result identified by the parameters to the storage.
 
-        :param params: parameters result is based on.
+        :param model.ModelParameters.ModelParameters model_params: ModelParameters
+        :param model.ComputeParameters.ComputeParameters compute_params: ComputeParameters
         :param result: computation result
         :return: boolean, true if save was successful
         """
@@ -33,7 +34,8 @@ class Storage:
         """
         This method returns whether for the set of parameters passed an entry is found.
 
-        :param params: set of parameters passed
+        :param model.ModelParameters.ModelParameters model_params: ModelParameters
+        :param model.ComputeParameters.ComputeParameters compute_params: ComputeParameters
         :return: bool true if an entry is found, false otherwise
         """
         return
@@ -43,7 +45,8 @@ class Storage:
         """
         Returns the result associated with the set of parameters, None otherwise.
 
-        :param params: Set of parameters to find entry for.
+        :param model.ModelParameters.ModelParameters model_params: ModelParameters
+        :param model.ComputeParameters.ComputeParameters compute_params: ComputeParameters
         :return: result if found, None otherwise
         """
         return
