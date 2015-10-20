@@ -1,8 +1,11 @@
+import atexit
 from flask import Flask, jsonify
 from model.UserParameters import UserParameters
 from server.DefaultComputeManager import DefaultComputeManager
 from server.DefaultWorkerManager import DefaultWorkerManager
 from storage.KeyValueCache import KeyValueCache
+from celery.task.control import discard_all
+
 
 app = Flask(__name__)
 
@@ -33,3 +36,8 @@ def get_result(job_id):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=5000)
+
+
+@atexit.register
+def cleanup():
+    discard_all()
