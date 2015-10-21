@@ -60,6 +60,7 @@ class KeyValueCache(Storage):
         :return: bool true if an entry is found, false otherwise
         """
         hash_key = self.generate_hash(model_params, compute_params)
+        print self._hashmap
         return hash_key in self._hashmap
 
     def get_result(self, model_params, compute_params):
