@@ -1,15 +1,16 @@
 from WorkerManager import WorkerManager
 from novaclient.client import Client
+from netifaces import interfaces, ifaddresses, AF_INET
 import paramiko
 import os
 
 
 class DefaultWorkerManager(WorkerManager):
     novaconfig = {'username': os.environ['OS_USERNAME'],
-                          'api_key': os.environ['OS_PASSWORD'],
-                          'project_id': os.environ['OS_TENANT_NAME'],
-                          'auth_url': os.environ['OS_AUTH_URL'],
-                          }
+                  'api_key': os.environ['OS_PASSWORD'],
+                  'project_id': os.environ['OS_TENANT_NAME'],
+                  'auth_url': os.environ['OS_AUTH_URL'],
+                  }
     nc = Client('2', **novaconfig)
 
     MAX_NUMBER = 10
@@ -34,7 +35,7 @@ class DefaultWorkerManager(WorkerManager):
         servers_to_start = []
         for i in range(0, num):
             # TODO
-            server = self.nc.servers.create("MMProjectWorker" + str(i), image, flavor, key_name="")
+            server = self.nc.servers.create("MMProjectWorker" + str(i), image, flavor, key_name="G14Key")
             servers_to_init.append(server)
         while len(servers_to_init) > 0 or len(servers_to_start) > 0:
             still_to_init = []
@@ -70,7 +71,10 @@ class DefaultWorkerManager(WorkerManager):
             ssh.connect(str(workerip), username="ubuntu")
             session = ssh.get_transport().open_session()
             # TODO adapt call to register on server
-            session.exec_command("cd airfoil-cloud-simulator/ && screen -d -m celery worker -A workertasks")
+            session.exec_command(
+                "cd airfoil-cloud-simulator/ && " +
+                "screen -d -m celery worker -A workertasks -b amqp://cloudworker:worker@" +
+                DefaultWorkerManager.my_ip())
             ssh.close()
             return True
         except:
@@ -82,12 +86,12 @@ class DefaultWorkerManager(WorkerManager):
         """
         :rtype : string
         """
-        from netifaces import interfaces, ifaddresses, AF_INET
         for ifaceName in interfaces():
-            addresses = [i['addr'] for i in ifaddresses(ifaceName).setdefault(AF_INET, [{'addr':'No IP addr'}] )]
+            addresses = [i['addr'] for i in ifaddresses(ifaceName).setdefault(AF_INET, [{'addr': 'No IP addr'}])]
             if ifaceName == "eth0":
                 print "My IP:" + addresses[0]
                 return addresses[0]
+
     @staticmethod
     def _shutdown_worker(self, worker):
         # TODO
