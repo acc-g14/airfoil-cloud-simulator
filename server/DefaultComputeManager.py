@@ -84,9 +84,10 @@ class DefaultComputeManager(ComputeManager):
             if self._storage.has_result(task.model_params, task.compute_params):
                 task.finished = True
                 task.result = self._storage.get_result(task.model_params, task.compute_params)
-            workertask = workertasks.simulate_airfoil.delay(task.model_params, task.compute_params)
-            task.workertask = workertask
-            task.id = workertask.id
+            else:
+                workertask = workertasks.simulate_airfoil.delay(task.model_params, task.compute_params)
+                task.workertask = workertask
+                task.id = workertask.id
             tasklist.append(task)
         self._jobs[str(job_id)] = Job(job_id, tasklist, [])
         return job_id
