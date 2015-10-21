@@ -64,6 +64,7 @@ class DefaultWorkerManager(WorkerManager):
 
     @staticmethod
     def _init_worker(workerip):
+        try:
             ssh = paramiko.SSHClient()
             ssh.load_system_host_keys()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -76,6 +77,8 @@ class DefaultWorkerManager(WorkerManager):
                 DefaultWorkerManager.my_ip() + "//")
             ssh.close()
             return True
+        except:
+            return False
 
     # from http://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib
     @staticmethod
