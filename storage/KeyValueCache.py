@@ -48,6 +48,7 @@ class KeyValueCache(Storage):
         """
         hash_key = self.generate_hash(model_params, compute_params)
         self._hashmap[hash_key] = result
+        print self._hashmap
         return True
 
     def has_result(self, model_params, compute_params):
