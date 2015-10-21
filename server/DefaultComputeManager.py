@@ -39,7 +39,7 @@ class DefaultComputeManager(ComputeManager):
                 elif task.workertask.ready():
                     task.result = task.workertask.result
                     tasks_ready += 1
-
+                    self._storage.save_result(task.model_params, task.compute_params, task.workertask.result)
             return {"tasks_ready": tasks_ready,
                     "tasks_total": tasks_total,
                     "finished": tasks_ready == tasks_total}
