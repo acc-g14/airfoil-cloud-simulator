@@ -74,10 +74,12 @@ class DefaultWorkerManager(WorkerManager):
             session.exec_command(
                 "cd airfoil-cloud-simulator/ && " +
                 "screen -d -m celery worker -A workertasks -b amqp://cloudworker:worker@" +
-                DefaultWorkerManager.my_ip())
+                DefaultWorkerManager.my_ip() + "//")
             ssh.close()
             return True
         except:
+            print "Exception in client installation"
+            print DefaultWorkerManager.my_ip()
             return False
 
     # from http://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib
