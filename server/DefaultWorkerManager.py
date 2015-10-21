@@ -35,7 +35,7 @@ class DefaultWorkerManager(WorkerManager):
         servers_to_start = []
         for i in range(0, num):
             # TODO
-            server = self.nc.servers.create("MMProjectWorker" + str(i), image, flavor, key_name="G14Key")
+            server = self.nc.servers.create("G14Worker" + str(i), image, flavor, key_name="G14Key")
             servers_to_init.append(server)
         while len(servers_to_init) > 0 or len(servers_to_start) > 0:
             still_to_init = []
