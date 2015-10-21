@@ -26,9 +26,9 @@ class DefaultWorkerManager(WorkerManager):
         return len(self._workers)
 
     def set_workers_available(self, num):
-        self.start_workers(num)
+        self._start_workers(num)
 
-    def start_workers(self, num):
+    def _start_workers(self, num):
         image = self.nc.images.find(name="G14Worker")
         flavor = self.nc.flavors.find(name="m1.medium")
         servers_to_init = []
@@ -49,9 +49,7 @@ class DefaultWorkerManager(WorkerManager):
                     for key, network in server.networks.iteritems():
                         ip = network[0]
                         break
-                    print ip
                     servers_to_start.append({"server": server, "ip": ip})
-            print len(servers_to_start)
             for server in servers_to_start:
                 init_successful = self._init_worker(server["ip"])
                 if not init_successful:
