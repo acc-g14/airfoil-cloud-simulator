@@ -33,7 +33,9 @@ class KeyValueCache(Storage):
         builder.update(str(compute_params.viscosity))
         builder.update("|")
         builder.update(str(compute_params.num_samples))
-        return builder.hexdigest()
+        hash = builder.hexdigest()
+        print "Hash: " + hash
+        return hash
 
     def save_result(self, model_params, compute_params, result):
         """
