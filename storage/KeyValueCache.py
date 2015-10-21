@@ -12,17 +12,26 @@ class KeyValueCache(Storage):
         This method generates a hash out of the parameters, which
         should be unique for a specific set of parameters.
 
+        :rtype : str
         :param model.ModelParameters.ModelParameters model_params: ModelParameters
         :param model.ComputeParameters.ComputeParameters compute_params: ComputeParameters
         """
-        builder = hashlib.sha256()
+        builder = hashlib.md5()
         builder.update(str(model_params.angle))
-        builder.update(str(model_params.naca4))
+        builder.update("|")
+        for value in model_params.naca4:
+            builder.update(str(value))
+        builder.update("|")
         builder.update(str(model_params.num_nodes))
+        builder.update("|")
         builder.update(str(model_params.refinement_level))
+        builder.update("|")
         builder.update(str(compute_params.speed))
+        builder.update("|")
         builder.update(str(compute_params.time))
+        builder.update("|")
         builder.update(str(compute_params.viscosity))
+        builder.update("|")
         builder.update(str(compute_params.num_samples))
         return builder.hexdigest()
 
@@ -45,10 +54,11 @@ class KeyValueCache(Storage):
 
         :param model.ModelParameters.ModelParameters model_params: ModelParameters
         :param model.ComputeParameters.ComputeParameters compute_params: ComputeParameters
+        :rtype bool
         :return: bool true if an entry is found, false otherwise
         """
         hash_key = self.generate_hash(model_params, compute_params)
-        return self._hashmap.has_key(hash_key)
+        return hash_key in self._hashmap
 
     def get_result(self, model_params, compute_params):
         """
@@ -56,7 +66,7 @@ class KeyValueCache(Storage):
 
         :param model.ModelParameters.ModelParameters model_params: ModelParameters
         :param model.ComputeParameters.ComputeParameters compute_params: ComputeParameters
-        :return: result if found, None otherwise
+        :rtype model.ComputeResult.ComputeResult|None
         """
         hash_key = self.generate_hash(model_params, compute_params)
         return self._hashmap.get(hash_key) or None

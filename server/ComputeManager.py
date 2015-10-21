@@ -12,7 +12,7 @@ class ComputeManager(object):
     def __init__(self, storage):
         """
         Init the manager with the given storage engine.
-        :param Storage storage: storage.Storage
+        :param Storage.Storage storage: storage.Storage.Storage
         :return: void
         """
         self._storage = storage
