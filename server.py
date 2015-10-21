@@ -16,12 +16,11 @@ worker_manager = DefaultWorkerManager()
 
 @app.route("/job", methods=['POST', 'GET'])
 def create_job():
-    print "waddup"
     user_params = UserParameters()
-    user_params.naca4[0] = float(request.form["n0"])
-    user_params.naca4[1] = float(request.form["n1"])
-    user_params.naca4[2] = float(request.form["n2"])
-    user_params.naca4[3] = float(request.form["n3"])
+    user_params.naca4[0] = int(request.form["n0"])
+    user_params.naca4[1] = int(request.form["n1"])
+    user_params.naca4[2] = int(request.form["n2"])
+    user_params.naca4[3] = int(request.form["n3"])
     user_params.min_angle = float(request.form["min_angle"])
     user_params.max_angle = float(request.form["max_angle"])
     user_params.step = float(request.form["step"])
