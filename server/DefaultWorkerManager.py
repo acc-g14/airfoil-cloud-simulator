@@ -29,7 +29,7 @@ class DefaultWorkerManager(WorkerManager):
         self.start_workers(num)
 
     def start_workers(self, num):
-        image = self.nc.images.find(name="MMProjectWorker")
+        image = self.nc.images.find(name="G14Worker")
         flavor = self.nc.flavors.find(name="m1.medium")
         servers_to_init = []
         servers_to_start = []
