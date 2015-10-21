@@ -64,7 +64,6 @@ class DefaultWorkerManager(WorkerManager):
 
     @staticmethod
     def _init_worker(workerip):
-        try:
             ssh = paramiko.SSHClient()
             ssh.load_system_host_keys()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
