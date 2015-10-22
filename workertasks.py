@@ -5,6 +5,8 @@ from worker.compute.AirfoilComputation import AirfoilComputation
 from worker.convert.GmshDolfinConverter import GmshDolfinConverter
 from worker.create.GmshModelCreator import GmshModelCreator
 from storage.Storage import Storage
+import model.ModelParameters
+import model.UserParameters
 import os
 import pycurl
 
