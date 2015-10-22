@@ -1,4 +1,5 @@
 import atexit
+import os
 from flask import Flask, jsonify, request, send_file
 from model.UserParameters import UserParameters
 from server.DefaultComputeManager import DefaultComputeManager
