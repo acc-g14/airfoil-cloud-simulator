@@ -1,6 +1,5 @@
 from Storage import Storage
 from utils import generate_hash
-import hashlib
 import sqlite3
 import json
 

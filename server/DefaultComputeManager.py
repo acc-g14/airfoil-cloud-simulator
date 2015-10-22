@@ -35,12 +35,8 @@ class DefaultComputeManager(ComputeManager):
             tasks_ready = 0
             tasks_total = len(job.tasks)
             for task in job.tasks:
-                if task.finished:
+                if self._storage.has_result(task.model_params, task.compute_params):
                     tasks_ready += 1
-                elif task.workertask.ready():
-                    task.result = task.workertask.result
-                    tasks_ready += 1
-                    self._storage.save_result(task.model_params, task.compute_params, task.workertask.result)
             return {"tasks_ready": tasks_ready,
                     "tasks_total": tasks_total,
                     "finished": tasks_ready == tasks_total}
@@ -49,22 +45,14 @@ class DefaultComputeManager(ComputeManager):
             job = self._jobs.get(job_id)
             if job is None:
                 raise ComputationException("No valid key specified")
-
             taskresults = []
             finished_tasks = 0
             total_tasks = len(job.tasks)
             for task in job.tasks:
-                if task.finished:
-                    # result already associated with task
-                    taskresults.append(task.result)
+                if self._storage.has_result(task.model_params, task.compute_params):
+                    result = self._storage.get_result(task.model_params, task.compute_params)
                     finished_tasks += 1
-                elif task.workertask.ready():
-                    task.finished = True
-                    task.result = task.workertask.result
-                    self._storage.save_result(task.model_params, task.compute_params, task.workertask.result)
-                    taskresults.append(task.result)
-                    finished_tasks += 1
-
+                    taskresults.append(result)
             return {"finished_tasks": finished_tasks,
                     "total_tasks": total_tasks,
                     "results": taskresults}
