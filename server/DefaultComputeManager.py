@@ -29,7 +29,6 @@ class DefaultComputeManager(ComputeManager):
 
     def get_status(self, job_id):
             job = self._jobs.get(job_id)
-
             if job is None:
                 raise ComputationException("No valid key specified")
 
@@ -48,7 +47,6 @@ class DefaultComputeManager(ComputeManager):
 
     def get_result(self, job_id):
             job = self._jobs.get(job_id)
-
             if job is None:
                 raise ComputationException("No valid key specified")
 
@@ -111,3 +109,6 @@ class DefaultComputeManager(ComputeManager):
             task = Task(None, None, model_parameters, compute_parameters, None)
             tasks.append(task)
         return tasks
+
+    def save_result(self, hash_key, result):
+        self._storage.save_result_hash(hash_key, result)

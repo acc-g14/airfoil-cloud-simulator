@@ -6,6 +6,7 @@ from server.DefaultComputeManager import DefaultComputeManager
 from server.DefaultWorkerManager import DefaultWorkerManager
 from storage.KeyValueCache import KeyValueCache
 from celery.task.control import discard_all
+import json
 
 
 app = Flask(__name__)
@@ -25,9 +26,11 @@ kv_storage = KeyValueCache(db_name)
 comp_manager = DefaultComputeManager(kv_storage, swiftconfig)
 worker_manager = DefaultWorkerManager(novaconfig)
 
+
 @app.route('/interface', methods=['GET'])
 def web_interface():
     return send_file("interface.html")
+
 
 @app.route("/job", methods=['POST', 'GET'])
 def create_job():
@@ -72,6 +75,10 @@ def get_result(job_id):
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=5000)
 
+@app.route("/result/<hash_key>", methods=["POST"])
+def save_result(hash_key):
+    result = request.form['result']
+    comp_manager.save_result(hash_key, result)
 
 @atexit.register
 def cleanup():

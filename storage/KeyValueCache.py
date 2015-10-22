@@ -5,6 +5,7 @@ import json
 
 
 class KeyValueCache(Storage):
+
     def __init__(self, db_name):
         Storage.__init__(self)
         self._db_name = db_name
@@ -24,11 +25,7 @@ class KeyValueCache(Storage):
         :return: boolean, true if save was successful
         """
         hash_key = self.generate_hash(model_params, compute_params)
-        conn = self._get_connection()
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO Results VALUES (?,?)", (hash_key, json.dumps(result)))
-        conn.commit()
-        conn.close()
+        self.save_result_hash(hash_key, json.dumps(result))
         return True
 
     def has_result(self, model_params, compute_params):
@@ -64,6 +61,14 @@ class KeyValueCache(Storage):
         print result
         conn.close()
         return json.loads(result)
+
+    def save_result_hash(self, hash_key, result):
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO Results VALUES (?,?)", (hash_key, result))
+        conn.commit()
+        conn.close()
+        return True
 
     def _get_connection(self):
         return sqlite3.connect(self._db_name)

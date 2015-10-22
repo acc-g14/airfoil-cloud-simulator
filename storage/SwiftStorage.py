@@ -2,6 +2,9 @@ from storage.Storage import Storage
 
 
 class SwiftStorage(Storage):
+    def save_result_hash(self, hash_key, result):
+        pass
+
     def save_result(self, model_params, compute_params, result):
         pass
 
