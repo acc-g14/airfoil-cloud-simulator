@@ -25,7 +25,7 @@ class DefaultWorkerManager(WorkerManager):
         available_workers = self.get_number_of_workers()
         max_workers = min(num, self.get_max_number_of_workers())
         # always leave one worker available
-        min_workers = max(max_workers, 1)
+        min_workers = max(max_workers, 0)
         if available_workers < max_workers:
             self._start_workers(max_workers - available_workers)
         elif available_workers > min_workers:
@@ -37,6 +37,7 @@ class DefaultWorkerManager(WorkerManager):
         flavor = self.nc.flavors.find(name="m1.medium")
         cloud_init = "#!/bin/bash \n" + \
                      " cd /home/ubuntu/airfoil-cloud-simulator \n" + \
+                     "git reset --hard && git pull \n" + \
                      " su -c 'celery -A workertasks worker -b amqp://cloudworker:worker@" + \
                      self._my_ip() + "//' ubuntu"
         for i in range(0, num):
@@ -54,7 +55,7 @@ class DefaultWorkerManager(WorkerManager):
             if ifaceName == "eth0":
                 return addresses[0]
 
-    @staticmethod
-    def _shutdown_workers(self, worker):
-        # TODO: implement
+    def _shutdown_workers(self, num_workers):
+        for i in xrange(0, num_workers):
+            self._workers.pop().delete()
         pass
