@@ -1,6 +1,13 @@
 from netifaces import interfaces, ifaddresses, AF_INET
 import hashlib
 
+def find_server_by_ip(ip, nc):
+    for s in nc.servers.list():
+        if s.networks.has_key("ACC-Course-net"):
+            print s.networks["ACC-Course-net"]
+            if ip in s.networks["ACC-Course-net"]: return s
+    return None
+
 def server_ip():
     """
     :rtype : string
