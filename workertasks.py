@@ -15,20 +15,21 @@ computation = AirfoilComputation()
 
 
 @app.task()
-def simulate_airfoil(modelParams, computeParams):
+def simulate_airfoil(model_params, compute_params, swift_config):
     """
-    :param model.ModelParameters.ModelParameters modelParams: ModelParameters
-    :param model.ComputeParameters.ComputeParameters computeParams: ComputeParameters
+    :param model.ModelParameters.ModelParameters model_params: ModelParameters
+    :param model.ComputeParameters.ComputeParameters compute_params: ComputeParameters
+    :param dict swift_config: dict
     """
     root_dir = os.getcwd()
-    working_dir = root_dir + "/workdir/" + str(modelParams.job) + "/a" + str(modelParams.angle)
+    working_dir = root_dir + "/workdir/" + str(model_params.job) + "/a" + str(model_params.angle)
     if not os.path.exists(working_dir): os.makedirs(working_dir)
     os.chdir(working_dir)
 
-    msh_file = creator.create_model(modelParams)
+    msh_file = creator.create_model(model_params)
     xml_file = converter.convert(msh_file)
-    result = computation.perform_computation(computeParams, xml_file)
-    result['angle'] = modelParams.angle
+    result = computation.perform_computation(compute_params, xml_file)
+    result['angle'] = model_params.angle
 
     os.chdir(root_dir)
 

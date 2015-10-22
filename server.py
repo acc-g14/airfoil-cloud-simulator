@@ -10,9 +10,19 @@ from celery.task.control import discard_all
 app = Flask(__name__)
 
 db_name = "server.db"
+swiftconfig = {'user': os.environ['OS_USERNAME'],
+               'key': os.environ['OS_PASSWORD'],
+               'tenant_name': os.environ['OS_TENANT_NAME'],
+               'authurl': os.environ['OS_AUTH_URL']}
+novaconfig = {'username': os.environ['OS_USERNAME'],
+              'api_key': os.environ['OS_PASSWORD'],
+              'project_id': os.environ['OS_TENANT_NAME'],
+              'auth_url': os.environ['OS_AUTH_URL'],
+              }
+
 kv_storage = KeyValueCache(db_name)
-comp_manager = DefaultComputeManager(kv_storage)
-worker_manager = DefaultWorkerManager()
+comp_manager = DefaultComputeManager(kv_storage, swiftconfig)
+worker_manager = DefaultWorkerManager(novaconfig)
 
 @app.route('/interface', methods=['GET'])
 def web_interface():
@@ -34,7 +44,6 @@ def create_job():
     user_params.viscosity = float(request.form["viscosity"])
     user_params.speed = float(request.form["speed"])
     user_params.time = float(request.form["time"])
-
 
     return jsonify({"job_id": comp_manager.start_computation(user_params)})
 

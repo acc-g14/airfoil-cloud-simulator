@@ -13,7 +13,7 @@ class ComputationException(BaseException):
 
 
 class DefaultComputeManager(ComputeManager):
-    def __init__(self, storage):
+    def __init__(self, storage, swift_config):
         super(DefaultComputeManager, self).__init__(storage)
         self._jobs = {}
 
@@ -85,7 +85,7 @@ class DefaultComputeManager(ComputeManager):
                 task.finished = True
                 task.result = self._storage.get_result(task.model_params, task.compute_params)
             else:
-                workertask = workertasks.simulate_airfoil.delay(task.model_params, task.compute_params)
+                workertask = workertasks.simulate_airfoil.delay(task.model_params, task.compute_params, swift_config)
                 task.workertask = workertask
                 task.id = workertask.id
             tasklist.append(task)
