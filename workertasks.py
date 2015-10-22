@@ -6,6 +6,8 @@ from worker.convert.GmshDolfinConverter import GmshDolfinConverter
 from worker.create.GmshModelCreator import GmshModelCreator
 from storage.Storage import Storage
 from utils import generate_hash
+from model.ModelParameters import ModelParameters
+from model.ComputeParameters import ComputeParameters
 import os
 import pycurl
 import json
