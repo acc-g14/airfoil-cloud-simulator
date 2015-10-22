@@ -1,5 +1,5 @@
 import atexit
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 from model.UserParameters import UserParameters
 from server.DefaultComputeManager import DefaultComputeManager
 from server.DefaultWorkerManager import DefaultWorkerManager
@@ -13,6 +13,9 @@ kv_storage = KeyValueCache()
 comp_manager = DefaultComputeManager(kv_storage)
 worker_manager = DefaultWorkerManager()
 
+@app.route('/interface', methods=['GET'])
+def web_interface():
+    return send_file("interface.html")
 
 @app.route("/job", methods=['POST', 'GET'])
 def create_job():
@@ -30,6 +33,7 @@ def create_job():
     user_params.viscosity = float(request.form["viscosity"])
     user_params.speed = float(request.form["speed"])
     user_params.time = float(request.form["time"])
+
 
     return jsonify({"job_id": comp_manager.start_computation(user_params)})
 

@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script type="application/javascript">
+		var preText = {};
+		preText["n0"] = "NACA1";
+		preText["n1"] = "NACA2";
+		preText["n2"] = "NACA3";
+		preText["n3"] = "NACA4";
+		preText["min_angle"] = "Angle start";
+		preText["max_angle"] = "Angle stop";
+		preText["step"] = "Angle step size";
+		preText["num_nodes"] = "Number of nodes in airfoil";
+		preText["refinement_level"] = "Number of refinement steps";
+		preText["num_samples"] = "Simulation samples";
+		preText["viscosity"] = "Simulation viscosity";
+		preText["speed"] = "Simulation speed";
+		preText["time"] = "Simulation time";
+
+		var jobId = "";
+
+		function clearArea(id, message) {
+			if ($(id).val() == message) {
+				$(id).val("");
+				$(id).css("color", "#ffffff");
+			}
+		}
+			
+		function fillArea(id, message) {
+			if ($(id).val() == "") {
+				$(id).val(message);
+				$(id).css("color", "#444444");
+			}
+		}
+
+	
+		$(document).ready(function() {
+			for (key in preText) {
+				var value = preText[key];
+				$("#" + key).val(value);
+				$("#" + key).focus(createClojure(key, value, clearArea));
+				$("#" + key).focusout(createClojure(key, value, fillArea));
+			}
+			
+			$("#airfoil-form").submit(function(e) {
+				var data = {}
+				
+				for (key in preText) {
+					data[key] = $("#" + key).val();
+				}
+				
+				$("#airfoil-form").remove();
+				
+		                var job = $.post( "job", data );
+ 
+				job.done(function( data ) {
+		                        jobId = data.job_id
+		                        $("#content").append("<pre id='jsonDiv'></pre>");
+					updateJobResult();
+				});
+				
+				return false;
+            		});
+				
+		});
+		
+		function updateJobResult() {
+		        var jobResult = $.get( "job/" + jobId + "/result");
+ 
+		        jobResult.done(function( data ) {
+		              $("#jsonDiv").html(jobId + " " + JSON.stringify(data, null, 4));
+		              setTimeout(updateJobResult, 100);
+		        });
+		}
+		
+		function createClojure(k, v, f) {
+			return function(e) {
+				f("#" + k, v); 
+			}
+		}
+	</script>
+    	<style>
+		body {
+			background-color:#1f1f1f;
+			color:#ffffff;
+			font-family:"Calibri Light";
+		}
+		
+		#content {
+			
+		}
+		
+		.formText {
+				margin-top:3px;
+				margin-bottom:3px;
+				width:170px;
+				background-color:#1f1f1f;
+				color:#444444;
+				outline: none;
+				border-color:#1f1f1f;
+				box-shadow: none;
+				border: none;
+				border-bottom:solid;
+				border-bottom-width:2px;
+				border-bottom-color:#444444;
+		}
+		
+		#submitButton {
+			width:170px;	
+		}
+	</style>
+	<title>Airfoil-simulation</title>
+</head>
+<body>
+	<div id="content">
+    	<form id="airfoil-form" action="">
+	<input class="formText" type="text" id="n0" /><br />
+        <input class="formText" type="text" id="n1" /><br />
+        <input class="formText" type="text" id="n2" /><br />
+        <input class="formText" type="text" id="n3" /><br />
+        <input class="formText" type="text" id="min_angle" /><br />
+        <input class="formText" type="text" id="max_angle" /><br />
+        <input class="formText" type="text" id="step" /><br />
+        <input class="formText" type="text" id="num_nodes" /><br />
+        <input class="formText" type="text" id="refinement_level" /><br />
+        <input class="formText" type="text" id="num_samples" /><br />
+        <input class="formText" type="text" id="viscosity" /><br />
+        <input class="formText" type="text" id="speed" /><br />
+        <input class="formText" type="text" id="time" /><br />
+        <input type="submit" id="submitButton" value="Start Job" />
+        </form>
+	</div>
+</body>
+</html>
