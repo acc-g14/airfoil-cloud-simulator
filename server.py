@@ -55,9 +55,9 @@ def delete_job(job_id):
     return jsonify(True)
 
 
-@app.route("/worker")
-def create_worker():
-    worker_manager.set_workers_available(1)
+@app.route("/worker/<int:num_workers>")
+def create_worker(num_workers):
+    worker_manager.set_workers_available(num_workers)
 
 
 @app.route("/job/<job_id>/status")
