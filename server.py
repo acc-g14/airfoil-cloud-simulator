@@ -68,6 +68,13 @@ def get_status(job_id):
     return jsonify(comp_manager.get_status(job_id))
 
 
+@app.route("/save_result/<hash_key>", methods=["POST"])
+def save_result(hash_key):
+    result = request.form['result']
+    comp_manager.save_result(hash_key, result)
+    return "asdsa"
+
+
 @app.route("/job/<job_id>/result")
 def get_result(job_id):
     return jsonify(comp_manager.get_result(job_id))
@@ -75,10 +82,6 @@ def get_result(job_id):
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=5000)
 
-@app.route("/result/<hash_key>", methods=["POST"])
-def save_result(hash_key):
-    result = request.form['result']
-    comp_manager.save_result(hash_key, result)
 
 @atexit.register
 def cleanup():
