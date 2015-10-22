@@ -68,7 +68,6 @@ class DefaultComputeManager(ComputeManager):
         tasks = self._convert_user_params_to_tasks(user_params, job_id)
         tasklist = []
         for task in tasks:
-            print task
             if self._storage.has_result(task.model_params, task.compute_params):
                 task.finished = True
                 task.result = self._storage.get_result(task.model_params, task.compute_params)

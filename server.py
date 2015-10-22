@@ -24,7 +24,7 @@ novaconfig = {'username': os.environ['OS_USERNAME'],
 
 kv_storage = KeyValueCache(db_name)
 comp_manager = DefaultComputeManager(kv_storage, swiftconfig)
-worker_manager = DefaultWorkerManager(novaconfig)
+worker_manager = DefaultWorkerManager(novaconfig, db_name)
 
 
 @app.route('/interface', methods=['GET'])
@@ -85,4 +85,5 @@ if __name__ == '__main__':
 
 @atexit.register
 def cleanup():
+    worker_manager.save_ips()
     discard_all()
