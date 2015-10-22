@@ -9,7 +9,8 @@ from celery.task.control import discard_all
 
 app = Flask(__name__)
 
-kv_storage = KeyValueCache()
+db_name = "server.db"
+kv_storage = KeyValueCache(db_name)
 comp_manager = DefaultComputeManager(kv_storage)
 worker_manager = DefaultWorkerManager()
 

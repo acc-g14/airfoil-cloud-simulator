@@ -39,7 +39,7 @@ class DefaultComputeManager(ComputeManager):
                 elif task.workertask.ready():
                     task.result = task.workertask.result
                     tasks_ready += 1
-
+                    self._storage.save_result(task.model_params, task.compute_params, task.workertask.result)
             return {"tasks_ready": tasks_ready,
                     "tasks_total": tasks_total,
                     "finished": tasks_ready == tasks_total}
@@ -61,6 +61,7 @@ class DefaultComputeManager(ComputeManager):
                 elif task.workertask.ready():
                     task.finished = True
                     task.result = task.workertask.result
+                    self._storage.save_result(task.model_params, task.compute_params, task.workertask.result)
                     taskresults.append(task.result)
                     finished_tasks += 1
 
@@ -80,11 +81,15 @@ class DefaultComputeManager(ComputeManager):
         tasklist = []
         for task in tasks:
             print task
-            workertask = workertasks.simulate_airfoil.delay(task.model_params, task.compute_params)
-            task.workertask = workertask
-            task.id = workertask.id
+            if self._storage.has_result(task.model_params, task.compute_params):
+                task.finished = True
+                task.result = self._storage.get_result(task.model_params, task.compute_params)
+            else:
+                workertask = workertasks.simulate_airfoil.delay(task.model_params, task.compute_params)
+                task.workertask = workertask
+                task.id = workertask.id
             tasklist.append(task)
-        self._jobs[str(job_id)] = Job(job_id, tasklist)
+        self._jobs[str(job_id)] = Job(job_id, tasklist, [])
         return job_id
 
     @staticmethod
