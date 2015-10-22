@@ -1,4 +1,5 @@
 from Storage import Storage
+from utils import generate_hash
 import hashlib
 import sqlite3
 import json
@@ -24,7 +25,7 @@ class KeyValueCache(Storage):
         :param result: computation result
         :return: boolean, true if save was successful
         """
-        hash_key = self.generate_hash(model_params, compute_params)
+        hash_key = generate_hash(model_params, compute_params)
         self.save_result_hash(hash_key, json.dumps(result))
         return True
 
@@ -36,7 +37,7 @@ class KeyValueCache(Storage):
         :param model.ComputeParameters.ComputeParameters compute_params: ComputeParameters
         :return: bool true if an entry is found, false otherwise
         """
-        hash_key = self.generate_hash(model_params, compute_params)
+        hash_key = generate_hash(model_params, compute_params)
         conn = self._get_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Results WHERE name = (?)", (hash_key,))
@@ -53,7 +54,7 @@ class KeyValueCache(Storage):
         :param model.ComputeParameters.ComputeParameters compute_params: ComputeParameters
         :rtype model.ComputeResult.ComputeResult|None
         """
-        hash_key = self.generate_hash(model_params, compute_params)
+        hash_key = generate_hash(model_params, compute_params)
         conn = self._get_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT value FROM Results WHERE name = (?)", (hash_key,))
