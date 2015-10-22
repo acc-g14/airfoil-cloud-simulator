@@ -1,6 +1,7 @@
 from Storage import Storage
 import hashlib
 import sqlite3
+import json
 
 
 class KeyValueCache(Storage):
@@ -9,7 +10,7 @@ class KeyValueCache(Storage):
         self._db_name = db_name
         conn = self._get_connection()
         c = conn.cursor()
-        c.execute("CREATE TABLE IF NOT EXISTS Results (name text PRIMARY KEY, value text)")
+        c.execute("CREATE TABLE IF NOT EXISTS Results (name text PRIMARY KEY, value blob)")
         conn.commit()
         conn.close()
 
@@ -53,7 +54,7 @@ class KeyValueCache(Storage):
         hash_key = self.generate_hash(model_params, compute_params)
         conn = self._get_connection()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO Results VALUES (?,?)", (hash_key, result))
+        cursor.execute("INSERT INTO Results VALUES (?,?)", (hash_key, json.dumps(result)))
         conn.commit()
         conn.close()
         return True
@@ -86,10 +87,11 @@ class KeyValueCache(Storage):
         hash_key = self.generate_hash(model_params, compute_params)
         conn = self._get_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM Results WHERE name = (?)", (hash_key,))
-        result = cursor.fetchone()
+        cursor.execute("SELECT value FROM Results WHERE name = (?)", (hash_key,))
+        result = cursor.fetchone()[0]
+        print result
         conn.close()
-        return result
+        return json.loads(result)
 
     def _get_connection(self):
         return sqlite3.connect(self._db_name)
