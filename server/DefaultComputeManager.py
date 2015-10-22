@@ -73,7 +73,7 @@ class DefaultComputeManager(ComputeManager):
                 task.finished = True
                 task.result = self._storage.get_result(task.model_params, task.compute_params)
             else:
-                workertask = workertasks.simulate_airfoil.delay(task.model_params, task.compute_params, **self._swift_config)
+                workertask = workertasks.simulate_airfoil.delay(task.model_params, task.compute_params, self._swift_config)
                 task.workertask = workertask
                 task.id = workertask.id
             tasklist.append(task)
