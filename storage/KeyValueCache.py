@@ -14,34 +14,6 @@ class KeyValueCache(Storage):
         conn.commit()
         conn.close()
 
-    def generate_hash(self, model_params, compute_params):
-        """
-        This method generates a hash out of the parameters, which
-        should be unique for a specific set of parameters.
-
-        :rtype : str
-        :param model.ModelParameters.ModelParameters model_params: ModelParameters
-        :param model.ComputeParameters.ComputeParameters compute_params: ComputeParameters
-        """
-        builder = hashlib.md5()
-        builder.update(str(model_params.angle))
-        builder.update("|")
-        for value in model_params.naca4:
-            builder.update(str(value))
-        builder.update("|")
-        builder.update(str(model_params.num_nodes))
-        builder.update("|")
-        builder.update(str(model_params.refinement_level))
-        builder.update("|")
-        builder.update(str(compute_params.speed))
-        builder.update("|")
-        builder.update(str(compute_params.time))
-        builder.update("|")
-        builder.update(str(compute_params.viscosity))
-        builder.update("|")
-        builder.update(str(compute_params.num_samples))
-        return builder.hexdigest()
-
     def save_result(self, model_params, compute_params, result):
         """
         This method stores the result identified by the parameters to the storage.

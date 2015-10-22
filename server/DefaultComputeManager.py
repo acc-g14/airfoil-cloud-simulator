@@ -1,11 +1,12 @@
 from ComputeManager import ComputeManager
-import uuid
-import numpy
 from model.ComputeParameters import ComputeParameters
 from model.Job import Job
 from model.ModelParameters import ModelParameters
 from model.Task import Task
+from utils import server_ip
 import workertasks
+import uuid
+import numpy
 
 
 class ComputationException(BaseException):
@@ -102,8 +103,7 @@ class DefaultComputeManager(ComputeManager):
         :return: model.Task.Task[]
         """
         tasks = []
-        compute_parameters = ComputeParameters(user_params.num_samples, user_params.viscosity, user_params.speed,
-                                               user_params.time)
+        compute_parameters = ComputeParameters(user_params.num_samples, user_params.viscosity, user_params.speed, user_params.time, server_ip())
         angles = numpy.arange(user_params.min_angle, user_params.max_angle, user_params.step)
         for angle in angles:
             model_parameters = ModelParameters(user_params.naca4, job, angle, user_params.num_nodes,

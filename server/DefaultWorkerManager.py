@@ -1,6 +1,6 @@
 from WorkerManager import WorkerManager
 from novaclient.client import Client
-from netifaces import interfaces, ifaddresses, AF_INET
+from utils import server_ip
 
 
 class DefaultWorkerManager(WorkerManager):
@@ -39,21 +39,12 @@ class DefaultWorkerManager(WorkerManager):
                      " cd /home/ubuntu/airfoil-cloud-simulator \n" + \
                      "git reset --hard && git pull \n" + \
                      " su -c 'celery -A workertasks worker -b amqp://cloudworker:worker@" + \
-                     self._my_ip() + "//' ubuntu"
+                     server_ip() + "//' ubuntu"
         for i in range(0, num):
             server = self.nc.servers.create("G14Worker" + str(i), image, flavor, userdata=cloud_init)
             self._workers.append(server)
 
     # from http://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib
-    @staticmethod
-    def _my_ip():
-        """
-        :rtype : string
-        """
-        for ifaceName in interfaces():
-            addresses = [i['addr'] for i in ifaddresses(ifaceName).setdefault(AF_INET, [{'addr': 'No IP addr'}])]
-            if ifaceName == "eth0":
-                return addresses[0]
 
     def _shutdown_workers(self, num_workers):
         for i in xrange(0, num_workers):
