@@ -1,7 +1,10 @@
 from netifaces import interfaces, ifaddresses, AF_INET
 import hashlib
 
-def find_server_by_ip(ip, nc):
+def find_vm_by_ip(ip, nc):
+    """
+    Finds a virtual machine given an ip
+    """
     for s in nc.servers.list():
         if s.networks.has_key("ACC-Course-net"):
             print s.networks["ACC-Course-net"]
