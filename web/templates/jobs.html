@@ -1,0 +1,39 @@
+{% extends "dashboard.html" %}
+
+{% block workspace_block %}
+    <h3>This is the designated area for jobs</h3>
+    <div>
+        {% block new_job_block %}
+        <a href="{{ url_for('new_job') }}">
+            +New Job
+        </a>
+        <!--    <button id = new_job_button onclick="showJobs()">+New Job</button>
+            function showJobs() {
+                {%  for job in existing_jobs %}
+                    document.getElementById("new_job_button") = jobs_to_dis
+                {% endfor %}
+            }
+        -->
+        {% endblock %}
+    </div>
+    <div>
+        {% block existing_jobs_block %}
+            {% for job in existing_jobs %}
+                <div class=job_list_div>
+                    {{ job }}
+                </div>
+            {%  endfor %}
+        {%  endblock %}
+
+        <!-- if no existing jobs, state this -->
+        {% if not existing_jobs %}
+            <br>No existing jobs.
+        {%  endif %}
+    </div>
+    <div>
+        Focused job details
+        <!-- info: status, results options: resume, pause, terminate -->
+
+        <!-- if no jobs in focus, display this -->
+    </div>
+{% endblock %}

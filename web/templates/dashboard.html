@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <div>
+        {% if session.logged_in %}
+            <h3>You are logged in</h3>
+        {% else %}
+            <h3>You are currently not logged in</h3>
+        {% endif %}
+    </div>
+    <div class=body_content>
+        <div class=action_menu>
+            {% block action_menu_block %}
+                <a href="{{ url_for('jobs') }}">Jobs</a><br>
+                <a href="{{ url_for('service_status') }}">Service status</a>
+            {% endblock %}
+        </div>
+        <div class=workspace>
+            {% block workspace_block %}
+
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}
