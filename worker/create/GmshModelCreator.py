@@ -1,6 +1,7 @@
 from worker.create.ModelCreator import ModelCreator
 from subprocess import call
 import re, sys, numpy as np
+import uuid
 
 class GmshModelCreator(ModelCreator):
     """
