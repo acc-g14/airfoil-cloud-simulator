@@ -1,11 +1,12 @@
+from urllib import urlencode
 from celery import Celery
 
 from worker.compute.AirfoilComputation import AirfoilComputation
 from worker.convert.GmshDolfinConverter import GmshDolfinConverter
 from worker.create.GmshModelCreator import GmshModelCreator
-from model.ModelParameters import ModelParameters
-from model.ComputeParameters import ComputeParameters
+from storage.Storage import Storage
 import os
+import pycurl
 
 app = Celery("CloudProjectWorker", backend="amqp://", broker="amqp://")
 
@@ -33,4 +34,12 @@ def simulate_airfoil(model_params, compute_params, swift_config):
 
     os.chdir(root_dir)
 
-    return result
+    hash_key = Storage.generate_hash(model_params, compute_params)
+    post_data = urlencode(result)
+
+    c = pycurl.Curl()
+    c.setopt(c.URL, compute_params.server_ip + ":5000/save_result/" + hash_key)
+    c.setopt(c.POSTFIELD, post_data)
+    c.perform()
+    
+    return None
