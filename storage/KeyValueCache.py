@@ -1,11 +1,17 @@
 from Storage import Storage
 import hashlib
+import sqlite3
 
 
 class KeyValueCache(Storage):
-    def __init__(self):
+    def __init__(self, db_name):
         Storage.__init__(self)
-        self._hashmap = {}
+        self._db_name = db_name
+        conn = self._get_connection()
+        c = conn.cursor()
+        c.execute("CREATE TABLE IF NOT EXISTS Results (name text PRIMARY KEY, value text)")
+        conn.commit()
+        conn.close()
 
     def generate_hash(self, model_params, compute_params):
         """
@@ -33,9 +39,7 @@ class KeyValueCache(Storage):
         builder.update(str(compute_params.viscosity))
         builder.update("|")
         builder.update(str(compute_params.num_samples))
-        hash = builder.hexdigest()
-        print "Hash: " + hash
-        return hash
+        return builder.hexdigest()
 
     def save_result(self, model_params, compute_params, result):
         """
@@ -47,7 +51,11 @@ class KeyValueCache(Storage):
         :return: boolean, true if save was successful
         """
         hash_key = self.generate_hash(model_params, compute_params)
-        self._hashmap[hash_key] = result
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO Results VALUES (?,?)", (hash_key, result))
+        conn.commit()
+        conn.close()
         return True
 
     def has_result(self, model_params, compute_params):
@@ -56,11 +64,16 @@ class KeyValueCache(Storage):
 
         :param model.ModelParameters.ModelParameters model_params: ModelParameters
         :param model.ComputeParameters.ComputeParameters compute_params: ComputeParameters
-        :rtype bool
         :return: bool true if an entry is found, false otherwise
         """
         hash_key = self.generate_hash(model_params, compute_params)
-        return hash_key in self._hashmap
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM Results WHERE name = (?)", (hash_key,))
+        result = cursor.fetchone()
+        print result
+        conn.close()
+        return result is not None
 
     def get_result(self, model_params, compute_params):
         """
@@ -71,5 +84,13 @@ class KeyValueCache(Storage):
         :rtype model.ComputeResult.ComputeResult|None
         """
         hash_key = self.generate_hash(model_params, compute_params)
-        return self._hashmap.get(hash_key) or None
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM Results WHERE name = (?)", (hash_key,))
+        result = cursor.fetchone()
+        conn.close()
+        return result
+
+    def _get_connection(self):
+        return sqlite3.connect(self._db_name)
 
