@@ -2,22 +2,16 @@ from WorkerManager import WorkerManager
 from novaclient.client import Client
 from netifaces import interfaces, ifaddresses, AF_INET
 import paramiko
-import os
 
 
 class DefaultWorkerManager(WorkerManager):
-    novaconfig = {'username': os.environ['OS_USERNAME'],
-                  'api_key': os.environ['OS_PASSWORD'],
-                  'project_id': os.environ['OS_TENANT_NAME'],
-                  'auth_url': os.environ['OS_AUTH_URL'],
-                  }
-    nc = Client('2', **novaconfig)
 
     MAX_NUMBER = 10
 
-    def __init__(self):
+    def __init__(self, novaconfig):
         WorkerManager.__init__(self)
         self._workers = []
+        self.nc = Client('2', **novaconfig)
 
     def get_max_number_of_workers(self):
         # TODO: add some config?
