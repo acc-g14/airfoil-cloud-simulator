@@ -18,6 +18,9 @@ class Storage:
         return
 
     @abc.abstractmethod
+    def save_result_hash(self, hash_key, result):
+        pass
+    @abc.abstractmethod
     def save_result(self, model_params, compute_params, result):
         """
         This method stores the result identified by the parameters to the storage.

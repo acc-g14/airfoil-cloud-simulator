@@ -59,3 +59,12 @@ class ComputeManager(object):
         """
         return
 
+    @abc.abstractmethod
+    def save_result(self, hash_key, result):
+        """
+        Saves result to database
+        :param hash_key: str
+        :param result: str
+        """
+        pass
+
