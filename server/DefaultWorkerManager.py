@@ -85,7 +85,7 @@ class DefaultWorkerManager(WorkerManager):
             session.exec_command(
                 "cd airfoil-cloud-simulator/ && " +
                 "screen -d -m celery worker -A workertasks -b amqp://cloudworker:worker@" +
-                DefaultWorkerManager.my_ip() + "//")
+                DefaultWorkerManager._my_ip() + "//")
             ssh.close()
             return True
         except:
@@ -93,7 +93,7 @@ class DefaultWorkerManager(WorkerManager):
 
     # from http://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib
     @staticmethod
-    def my_ip():
+    def _my_ip():
         """
         :rtype : string
         """
@@ -104,5 +104,5 @@ class DefaultWorkerManager(WorkerManager):
 
     @staticmethod
     def _shutdown_workers(self, worker):
-        # TODO
+        # TODO: implement
         pass
