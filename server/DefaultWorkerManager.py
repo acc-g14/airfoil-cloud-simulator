@@ -14,7 +14,7 @@ class DefaultWorkerManager(WorkerManager):
         self.db_name = db_name
         conn = sqlite3.connect(db_name)
         cursor = conn.cursor()
-        cursor.execute("CREATE TABLE IF NOT EXISTS Workers (ip text PRIMARY KEY)")
+        cursor.execute("CREATE TABLE IF NOT EXISTS Workers (id text PRIMARY KEY)")
         conn.commit()
         conn.close()
         self.nc = Client('2', **novaconfig)
@@ -24,11 +24,9 @@ class DefaultWorkerManager(WorkerManager):
         return DefaultWorkerManager.MAX_NUMBER
 
     def get_number_of_workers(self):
-        # TODO: respect workers which are currently starting/initializing
         return len(self._workers)
 
     def set_workers_available(self, num):
-        print "Hallo"
         available_workers = self.get_number_of_workers()
         max_workers = min(num, self.get_max_number_of_workers())
         # always leave one worker available
@@ -42,7 +40,7 @@ class DefaultWorkerManager(WorkerManager):
         # basic parameters
         image = self.nc.images.find(name="G14Worker")
         flavor = self.nc.flavors.find(name="m1.medium")
-        servers_to_init = []
+
         cloud_init = "#!/bin/bash \n" + \
                      " cd /home/ubuntu/airfoil-cloud-simulator \n" + \
                      "git reset --hard && git pull \n" + \
@@ -52,18 +50,33 @@ class DefaultWorkerManager(WorkerManager):
             server = self.nc.servers.create("G14Worker" + str(i), image, flavor, userdata=cloud_init)
             self._workers.append(server)
 
-    def save_ips(self):
+    def save_ids(self):
+        """
+        Save known workers to database.
+        :return:
+        """
         for worker in self._workers:
-            for key, network in worker.networks.iteritems():
-                ip = network[0]
-                self._save_ip(ip)
-                break
+            self._save_id(worker.id)
 
-    # from http://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib
-    def _save_ip(self, ip):
+    def _save_id(self, wid):
         conn = sqlite3.connect(self.db_name)
         c = conn.cursor()
-        c.execute("INSERT INTO Workers VALUES(?)", (ip,))
+        c.execute("INSERT INTO Workers VALUES(?)", (wid,))
+        conn.commit()
+        conn.close()
+
+    def load_workers(self):
+        """
+        Recover workers saved in database.
+        :return:
+        """
+        conn = sqlite3.connect(self.db_name)
+        c = conn.cursor()
+        c.execute("SELECT id FROM Workers")
+        ids = c.fetchall()
+        for id in ids:
+            self._load_worker(id)
+        c.execute("DELETE FROM Workers")
         conn.commit()
         conn.close()
 
@@ -71,3 +84,8 @@ class DefaultWorkerManager(WorkerManager):
         for i in xrange(0, num_workers):
             self._workers.pop().delete()
         pass
+
+    def _load_worker(self, wid):
+        worker = self.nc.find(id=wid)
+        if worker is not None:
+            self._workers.append(worker)

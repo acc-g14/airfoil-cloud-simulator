@@ -80,10 +80,11 @@ def get_result(job_id):
     return jsonify(comp_manager.get_result(job_id))
 
 if __name__ == '__main__':
+    worker_manager.load_workers()
     app.run(host='0.0.0.0', debug=True, port=5000)
 
 
 @atexit.register
 def cleanup():
-    worker_manager.save_ips()
+    worker_manager.save_ids()
     discard_all()
