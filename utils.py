@@ -1,6 +1,7 @@
 from netifaces import interfaces, ifaddresses, AF_INET
 import hashlib
 
+
 def find_vm_by_ip(ip, nc):
     """
     Finds a virtual machine given an ip
@@ -11,6 +12,7 @@ def find_vm_by_ip(ip, nc):
             if ip in s.networks["ACC-Course-net"]: return s
     return None
 
+
 def server_ip():
     """
     :rtype : string
@@ -19,6 +21,7 @@ def server_ip():
         addresses = [i['addr'] for i in ifaddresses(ifaceName).setdefault(AF_INET, [{'addr': 'No IP addr'}])]
         if ifaceName == "eth0":
             return addresses[0]
+
 
 def generate_hash(model_params, compute_params):
     """

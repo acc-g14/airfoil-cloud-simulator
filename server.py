@@ -1,3 +1,4 @@
+from Crypto.Cipher import AES
 import atexit
 import os
 from flask import Flask, jsonify, request, send_file
@@ -6,6 +7,7 @@ from server.DefaultComputeManager import DefaultComputeManager
 from server.DefaultWorkerManager import DefaultWorkerManager
 from storage.KeyValueCache import KeyValueCache
 from celery.task.control import discard_all
+from Crypto import Random
 import json
 
 
@@ -23,7 +25,22 @@ novaconfig = {'username': os.environ['OS_USERNAME'],
               }
 
 kv_storage = KeyValueCache(db_name)
-comp_manager = DefaultComputeManager(kv_storage, swiftconfig)
+try:
+    with open("key.aes", "r") as myfile:
+        key = myfile.read().replace("\n", "")
+except IOError:
+    with open("key.aes", "w") as f:
+        key = Random.get_random_bytes(32)
+        f.write(key)
+try:
+    with open("iv.txt", "r") as file:
+        iv = file.read().replace("\n", "")
+except IOError:
+    with open("iv.txt", "w") as file:
+        iv = Random.get_random_bytes(16)
+        file.write(iv)
+crypt_obj = AES.new(key, AES.MODE_CBC, iv)
+comp_manager = DefaultComputeManager(kv_storage, swiftconfig, crypt_obj)
 worker_manager = DefaultWorkerManager(novaconfig, db_name)
 
 

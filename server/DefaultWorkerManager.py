@@ -11,7 +11,7 @@ class DefaultWorkerManager(WorkerManager):
     def __init__(self, novaconfig, db_name):
         WorkerManager.__init__(self)
         self._workers = []
-        self.db_name = db_name
+        self._db_name = db_name
         conn = sqlite3.connect(db_name)
         cursor = conn.cursor()
         cursor.execute("CREATE TABLE IF NOT EXISTS Workers (id text PRIMARY KEY)")
@@ -40,7 +40,6 @@ class DefaultWorkerManager(WorkerManager):
         # basic parameters
         image = self.nc.images.find(name="G14Worker")
         flavor = self.nc.flavors.find(name="m1.medium")
-
         cloud_init = "#!/bin/bash \n" + \
                      " cd /home/ubuntu/airfoil-cloud-simulator \n" + \
                      "git reset --hard && git pull \n" + \
@@ -59,7 +58,7 @@ class DefaultWorkerManager(WorkerManager):
             self._save_id(worker.id)
 
     def _save_id(self, wid):
-        conn = sqlite3.connect(self.db_name)
+        conn = sqlite3.connect(self._db_name)
         c = conn.cursor()
         c.execute("INSERT INTO Workers VALUES(?)", (wid,))
         conn.commit()
@@ -70,7 +69,7 @@ class DefaultWorkerManager(WorkerManager):
         Recover workers saved in database.
         :return:
         """
-        conn = sqlite3.connect(self.db_name)
+        conn = sqlite3.connect(self._db_name)
         c = conn.cursor()
         c.execute("SELECT id FROM Workers")
         ids = c.fetchall()
@@ -89,3 +88,4 @@ class DefaultWorkerManager(WorkerManager):
         worker = self.nc.find(id=wid)
         if worker is not None:
             self._workers.append(worker)
+        print self._workers
