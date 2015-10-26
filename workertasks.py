@@ -20,12 +20,18 @@ creator = GmshModelCreator()
 converter = GmshDolfinConverter()
 computation = AirfoilComputation()
 
-with open("key.aes", "r") as f:
-    key = f.read()
+try:
+    with open("key.aes", "r") as f:
+        key = f.read()
 
-with open("iv.txt", "r") as f:
-    iv = f.read()
-crypt_obj = AES.new(key, AES.MODE_ECB, iv)
+    with open("iv.txt", "r") as f:
+        iv = f.read()
+    crypt_obj = AES.new(key, AES.MODE_ECB, iv)
+except IOError:
+    pass
+
+
+
 @app.task()
 def simulate_airfoil(model_params, compute_params, encrypted_swift_config):
     """
