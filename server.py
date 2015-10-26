@@ -40,7 +40,8 @@ except IOError:
         iv = Random.get_random_bytes(16)
         file.write(iv)
 crypt_obj = AES.new(key, AES.MODE_CBC, iv)
-comp_manager = DefaultComputeManager(kv_storage, swiftconfig, crypt_obj)
+crypt2 = AES.new(key, AES.MODE_CBC, iv)
+comp_manager = DefaultComputeManager(kv_storage, swiftconfig, crypt_obj, crypt2)
 worker_manager = DefaultWorkerManager(novaconfig, db_name)
 
 
