@@ -15,12 +15,11 @@ class ComputationException(BaseException):
 
 
 class DefaultComputeManager(ComputeManager):
-    def __init__(self, storage, swift_config, crypt, crypt2):
+    def __init__(self, storage, swift_config, crypt):
         super(DefaultComputeManager, self).__init__(storage)
         self._swift_config = swift_config
         self._jobs = {}
         self._crypt = crypt
-        self._crypt2 = crypt2
 
     def stop_computation(self, job_id):
         job = self._jobs.get(job_id)
@@ -79,7 +78,7 @@ class DefaultComputeManager(ComputeManager):
                 while len(string) % 16 != 0:
                     string += " "
                 config = self._crypt.encrypt(string)
-                print self._crypt2.decrypt(config)
+                print self._crypt.decrypt(config)
                 workertask = workertasks.simulate_airfoil.delay(task.model_params, task.compute_params, config)
                 task.workertask = workertask
                 task.id = workertask.id

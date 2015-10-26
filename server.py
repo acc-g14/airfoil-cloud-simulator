@@ -39,9 +39,8 @@ except IOError:
     with open("iv.txt", "w") as file:
         iv = Random.get_random_bytes(16)
         file.write(iv)
-crypt_obj = AES.new(key, AES.MODE_CBC, iv)
-crypt2 = AES.new(key, AES.MODE_CBC, iv)
-comp_manager = DefaultComputeManager(kv_storage, swiftconfig, crypt_obj, crypt2)
+crypt_obj = AES.new(key, AES.MODE_ECB, iv)
+comp_manager = DefaultComputeManager(kv_storage, swiftconfig, crypt_obj)
 worker_manager = DefaultWorkerManager(novaconfig, db_name)
 
 
