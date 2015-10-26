@@ -92,7 +92,7 @@ class DefaultWorkerManager(WorkerManager):
 
     def _load_worker(self, wid):
         print wid
-        worker = self._nc.find(id=wid)
+        worker = self._nc.servers.find(id=wid)
         if worker is not None:
             self._workers.append(worker)
         print self._workers
