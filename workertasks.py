@@ -40,7 +40,6 @@ def simulate_airfoil(model_params, compute_params, encrypted_swift_config):
     :param dict swift_config: dict
     """
     root_dir = os.getcwd()
-    print crypt_obj.decrypt(encrypted_swift_config)
     working_dir = root_dir + "/workdir/" + str(model_params.job) + "/a" + str(model_params.angle)
     if not os.path.exists(working_dir): os.makedirs(working_dir)
     os.chdir(working_dir)
