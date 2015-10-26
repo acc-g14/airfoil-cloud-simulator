@@ -8,7 +8,7 @@ class DefaultWorkerManager(WorkerManager):
 
     MAX_NUMBER = 10
 
-    def __init__(self, novaconfig, db_name):
+    def __init__(self, novaconfig, db_name, key, iv):
         WorkerManager.__init__(self)
         self._workers = []
         self._db_name = db_name
@@ -17,7 +17,9 @@ class DefaultWorkerManager(WorkerManager):
         cursor.execute("CREATE TABLE IF NOT EXISTS Workers (id text PRIMARY KEY)")
         conn.commit()
         conn.close()
-        self.nc = Client('2', **novaconfig)
+        self._nc = Client('2', **novaconfig)
+        self._key = key
+        self._iv = iv
 
     def get_max_number_of_workers(self):
         # TODO: add some config?
@@ -38,15 +40,17 @@ class DefaultWorkerManager(WorkerManager):
 
     def _start_workers(self, num):
         # basic parameters
-        image = self.nc.images.find(name="G14Worker")
-        flavor = self.nc.flavors.find(name="m1.medium")
+        image = self._nc.images.find(name="G14Worker")
+        flavor = self._nc.flavors.find(name="m1.medium")
         cloud_init = "#!/bin/bash \n" + \
                      " cd /home/ubuntu/airfoil-cloud-simulator \n" + \
                      "git reset --hard && git pull \n" + \
+                     "echo '" + self._key + "' >> key.aes\n" + \
+                     "echo '" + self._iv + "' >> iv.txt\n"\
                      " su -c 'celery -A workertasks worker -b amqp://cloudworker:worker@" + \
                      server_ip() + "//' ubuntu"
         for i in xrange(0, num):
-            server = self.nc.servers.create("G14Worker" + str(i), image, flavor, userdata=cloud_init)
+            server = self._nc.servers.create("G14Worker" + str(i), image, flavor, userdata=cloud_init)
             self._workers.append(server)
 
     def save_ids(self):
@@ -86,7 +90,7 @@ class DefaultWorkerManager(WorkerManager):
 
     def _load_worker(self, wid):
         print wid
-        worker = self.nc.find(id=wid)
+        worker = self._nc.find(id=wid)
         if worker is not None:
             self._workers.append(worker)
         print self._workers

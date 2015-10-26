@@ -78,7 +78,6 @@ class DefaultComputeManager(ComputeManager):
                 while len(string) % 16 != 0:
                     string += " "
                 config = self._crypt.encrypt(string)
-                print self._crypt.decrypt(config)
                 workertask = workertasks.simulate_airfoil.delay(task.model_params, task.compute_params, config)
                 task.workertask = workertask
                 task.id = workertask.id

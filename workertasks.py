@@ -11,6 +11,7 @@ from model.ComputeParameters import ComputeParameters
 import os
 import pycurl
 import json
+from Crypto.Cipher import AES
 from urllib import urlencode
 
 app = Celery("CloudProjectWorker", backend="amqp://", broker="amqp://")
@@ -19,15 +20,21 @@ creator = GmshModelCreator()
 converter = GmshDolfinConverter()
 computation = AirfoilComputation()
 
+with open("key.aes", "r") as f:
+    key = f.read()
 
+with open("iv.txt", "r") as f:
+    iv = f.read()
+crypt_obj = AES.new(key, AES.MODE_ECB, iv)
 @app.task()
-def simulate_airfoil(model_params, compute_params, swift_config):
+def simulate_airfoil(model_params, compute_params, encrypted_swift_config):
     """
     :param model.ModelParameters.ModelParameters model_params: ModelParameters
     :param model.ComputeParameters.ComputeParameters compute_params: ComputeParameters
     :param dict swift_config: dict
     """
     root_dir = os.getcwd()
+    print crypt_obj.decrypt(encrypted_swift_config)
     working_dir = root_dir + "/workdir/" + str(model_params.job) + "/a" + str(model_params.angle)
     if not os.path.exists(working_dir): os.makedirs(working_dir)
     os.chdir(working_dir)

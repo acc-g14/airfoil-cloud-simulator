@@ -41,7 +41,7 @@ except IOError:
         file.write(iv)
 crypt_obj = AES.new(key, AES.MODE_ECB, iv)
 comp_manager = DefaultComputeManager(kv_storage, swiftconfig, crypt_obj)
-worker_manager = DefaultWorkerManager(novaconfig, db_name)
+worker_manager = DefaultWorkerManager(novaconfig, db_name, key, iv)
 
 
 @app.route('/interface', methods=['GET'])
