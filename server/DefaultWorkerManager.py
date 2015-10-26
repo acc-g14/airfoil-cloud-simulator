@@ -85,6 +85,7 @@ class DefaultWorkerManager(WorkerManager):
         pass
 
     def _load_worker(self, wid):
+        print wid
         worker = self.nc.find(id=wid)
         if worker is not None:
             self._workers.append(worker)

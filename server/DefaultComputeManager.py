@@ -74,7 +74,10 @@ class DefaultComputeManager(ComputeManager):
                 task.finished = True
                 task.result = self._storage.get_result(task.model_params, task.compute_params)
             else:
-                config = self._crypt.encrypt(json.dumps(self._swift_config))
+                string = json.dumps(self._swift_config)
+                while string % 16 != 0:
+                    string += " "
+                config = self._crypt.encrypt(string)
                 print self._crypt.decrypt(config)
                 workertask = workertasks.simulate_airfoil.delay(task.model_params, task.compute_params, config)
                 task.workertask = workertask
