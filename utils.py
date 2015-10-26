@@ -1,5 +1,7 @@
 from netifaces import interfaces, ifaddresses, AF_INET
 import hashlib
+import string
+import random
 
 
 def find_vm_by_ip(ip, nc):
@@ -50,3 +52,10 @@ def generate_hash(model_params, compute_params):
         builder.update("|")
         builder.update(str(compute_params.num_samples))
         return builder.hexdigest()
+
+
+def id_generator(size, chars=string.ascii_uppercase + string.digits):
+    """
+    http://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits-in-python
+    """
+    return ''.join(random.choice(chars) for _ in range(size))

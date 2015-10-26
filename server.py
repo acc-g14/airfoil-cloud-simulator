@@ -7,8 +7,8 @@ from server.DefaultComputeManager import DefaultComputeManager
 from server.DefaultWorkerManager import DefaultWorkerManager
 from storage.KeyValueCache import KeyValueCache
 from celery.task.control import discard_all
-from Crypto import Random
-import json
+from utils import id_generator
+
 
 
 app = Flask(__name__)
@@ -30,14 +30,14 @@ try:
         key = myfile.read().replace("\n", "")
 except IOError:
     with open("key.aes", "w") as f:
-        key = Random.get_random_bytes(32)
+        key = id_generator(32)
         f.write(key)
 try:
     with open("iv.txt", "r") as file:
         iv = file.read().replace("\n", "")
 except IOError:
     with open("iv.txt", "w") as file:
-        iv = Random.get_random_bytes(16)
+        iv = id_generator(16)
         file.write(iv)
 crypt_obj = AES.new(key, AES.MODE_ECB, iv)
 comp_manager = DefaultComputeManager(kv_storage, swiftconfig, crypt_obj)
