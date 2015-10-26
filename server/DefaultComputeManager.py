@@ -7,6 +7,7 @@ from utils import server_ip
 import workertasks
 import uuid
 import numpy
+import json
 
 
 class ComputationException(BaseException):
@@ -73,7 +74,8 @@ class DefaultComputeManager(ComputeManager):
                 task.finished = True
                 task.result = self._storage.get_result(task.model_params, task.compute_params)
             else:
-                config = self._crypt.encrypt(self._swift_config)
+                config = self._crypt.encrypt(json.dumps(self._swift_config))
+                print self._crypt.decrypt(config)
                 workertask = workertasks.simulate_airfoil.delay(task.model_params, task.compute_params, config)
                 task.workertask = workertask
                 task.id = workertask.id
