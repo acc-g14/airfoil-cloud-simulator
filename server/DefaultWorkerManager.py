@@ -1,3 +1,4 @@
+import novaclient.exceptions
 from WorkerManager import WorkerManager
 from novaclient.client import Client
 from utils import server_ip
@@ -73,12 +74,10 @@ class DefaultWorkerManager(WorkerManager):
         Recover workers saved in database.
         :return:
         """
-        print "hi"
         conn = sqlite3.connect(self._db_name)
         c = conn.cursor()
         c.execute("SELECT id FROM Workers")
         ids = c.fetchall()
-        print ids
         for id in ids:
             self._load_worker(id)
         c.execute("DELETE FROM Workers")
@@ -91,8 +90,9 @@ class DefaultWorkerManager(WorkerManager):
         pass
 
     def _load_worker(self, wid):
-        print wid
-        worker = self._nc.servers.find(id=wid)
-        if worker is not None:
-            self._workers.append(worker)
-        print self._workers
+        try:
+            worker = self._nc.servers.find(id=wid)
+            if worker is not None:
+                self._workers.append(worker)
+        except novaclient.exceptions.NotFound:
+            pass
