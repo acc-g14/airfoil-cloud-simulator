@@ -75,7 +75,7 @@ class DefaultComputeManager(ComputeManager):
                 task.result = self._storage.get_result(task.model_params, task.compute_params)
             else:
                 string = json.dumps(self._swift_config)
-                while string % 16 != 0:
+                while len(string) % 16 != 0:
                     string += " "
                 config = self._crypt.encrypt(string)
                 print self._crypt.decrypt(config)
