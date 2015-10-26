@@ -40,6 +40,7 @@ def simulate_airfoil(model_params, compute_params, encrypted_swift_config):
     :param dict swift_config: dict
     """
     root_dir = os.getcwd()
+    # print crypt_obj.decrypt(encrypted_swift_config)
     working_dir = root_dir + "/workdir/" + str(model_params.job) + "/a" + str(model_params.angle)
     if not os.path.exists(working_dir): os.makedirs(working_dir)
     os.chdir(working_dir)
@@ -52,14 +53,14 @@ def simulate_airfoil(model_params, compute_params, encrypted_swift_config):
     os.chdir(root_dir)
 
     hash_key = generate_hash(model_params, compute_params)
-    post_data = urlencode({"result" : json.dumps(result)})
+    post_data = urlencode({"result": json.dumps(result)})
 
     print post_data
 
     url = compute_params.server_ip + ":5000/save_result/" + hash_key
 
     c = pycurl.Curl()
-    c.setopt(c.URL, compute_params.server_ip + ":5000/save_result/" + hash_key)
+    c.setopt(c.URL, url)
     c.setopt(c.POSTFIELDS, post_data)
     c.perform()
     

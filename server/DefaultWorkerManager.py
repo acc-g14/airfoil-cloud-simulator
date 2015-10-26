@@ -73,10 +73,12 @@ class DefaultWorkerManager(WorkerManager):
         Recover workers saved in database.
         :return:
         """
+        print "hi"
         conn = sqlite3.connect(self._db_name)
         c = conn.cursor()
         c.execute("SELECT id FROM Workers")
         ids = c.fetchall()
+        print ids
         for id in ids:
             self._load_worker(id)
         c.execute("DELETE FROM Workers")
