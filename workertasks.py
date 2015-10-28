@@ -75,6 +75,8 @@ def simulate_airfoil(model_params, compute_params, encrypted_swift_config):
     connection = swiftclient.client.Connection(auth_version=2, **config)
 
     #put result into object store, with the results hash_key as name
-    conn.put_object(bucket_name, hash_key, j_data)
+    connection.put_object("G14Container", hash_key, j_data)
+    
+    print "waddup"
     
     return result
