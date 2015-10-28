@@ -14,10 +14,10 @@ from urllib import urlencode
 import os
 import pycurl
 import json
-import swiftclient.client
-import cPickle
+from model.Config import Config
 
-app = Celery("CloudProjectWorker", backend="amqp://", broker="amqp://")
+config = Config()
+app = Celery("CloudProjectWorker", backend=config.backend, broker=config.broker)
 
 creator = GmshModelCreator()
 converter = GmshDolfinConverter()

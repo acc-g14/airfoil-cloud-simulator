@@ -25,6 +25,8 @@ class Config:
         self.key = self._read_file(key_filename, 32)
         self.iv = self._read_file(iv_filename, 16)
         self.db_name = parser.get("server", "db_name")
+        self.backend = parser.get("server", "backend")
+        self.broker = parser.get("server", "broker")
         self.crypt_obj = AES.new(self.key, AES.MODE_ECB, self.iv)
 
     @staticmethod
