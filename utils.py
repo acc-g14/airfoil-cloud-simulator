@@ -67,7 +67,10 @@ class DBUtil:
     def execute_command(cls, db_name, command, params=None, fetch=None):
         conn = sqlite3.connect(db_name)
         c = conn.cursor()
-        c.execute(command, params)
+        if params is None:
+            c.execute(command)
+        else:
+            c.execute(command, params)
         if fetch == "ALL":
             result = c.fetchall()
         elif fetch == "ONE":
