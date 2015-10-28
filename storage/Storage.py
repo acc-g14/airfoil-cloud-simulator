@@ -1,4 +1,5 @@
 import abc
+import utils
 
 
 class Storage:
@@ -6,16 +7,8 @@ class Storage:
     def __init__(self):
         pass
 
-    @abc.abstractmethod
     def generate_hash(self, model_params, compute_params):
-        """
-        This method generates a hash out of the parameters, which
-        should be unique for a specific set of parameters.
-
-        :param model.ModelParameters.ModelParameters model_params: ModelParameters
-        :param model.ComputeParameters.ComputeParameters compute_params: ComputeParameters
-        """
-        return
+        return utils.generate_hash(model_params, compute_params)
 
     @abc.abstractmethod
     def save_result_hash(self, hash_key, result):

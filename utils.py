@@ -2,6 +2,7 @@ from netifaces import interfaces, ifaddresses, AF_INET
 import hashlib
 import string
 import random
+import sqlite3
 
 
 def find_vm_by_ip(ip, nc):
@@ -59,3 +60,23 @@ def id_generator(size, chars=string.ascii_uppercase + string.digits):
     http://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits-in-python
     """
     return ''.join(random.choice(chars) for _ in range(size))
+
+class DBUtil:
+
+    @classmethod
+    def execute_command(cls, db_name, command, params=None, fetch=None):
+        conn = sqlite3.connect(db_name)
+        c = conn.cursor()
+        if params is None:
+            c.execute(command)
+        else:
+            c.execute(command, params)
+        if fetch == "ALL":
+            result = c.fetchall()
+        elif fetch == "ONE":
+            result = c.fetchone()
+        else:
+            result = None
+        conn.commit()
+        conn.close()
+        return result

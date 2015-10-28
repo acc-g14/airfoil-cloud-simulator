@@ -9,31 +9,32 @@ class DefaultWorkerManager(WorkerManager):
 
     MAX_NUMBER = 10
 
-    def __init__(self, novaconfig, db_name, key, iv):
+    def __init__(self, config, db_name):
         WorkerManager.__init__(self)
         self._workers = []
-        self._db_name = db_name
         conn = sqlite3.connect(db_name)
         cursor = conn.cursor()
         cursor.execute("CREATE TABLE IF NOT EXISTS Workers (id text PRIMARY KEY)")
         conn.commit()
         conn.close()
-        self._nc = Client('2', **novaconfig)
-        self._key = key
-        self._iv = iv
+        self._config = config
+        self._nc = Client('2', **config.nova_config)
 
     def get_max_number_of_workers(self):
-        # TODO: add some config?
-        return DefaultWorkerManager.MAX_NUMBER
+        return self._config.max_workers
+
+    def get_min_number_of_workers(self):
+        return self._config.min_workers
 
     def get_number_of_workers(self):
         return len(self._workers)
 
     def set_workers_available(self, num):
         available_workers = self.get_number_of_workers()
+        # select either number or if number > max_workers use max_workers
         max_workers = min(num, self.get_max_number_of_workers())
         # always leave one worker available
-        min_workers = max(max_workers, 0)
+        min_workers = max(max_workers, self.get_min_number_of_workers())
         if available_workers < max_workers:
             self._start_workers(max_workers - available_workers)
         elif available_workers > min_workers:
@@ -46,8 +47,8 @@ class DefaultWorkerManager(WorkerManager):
         cloud_init = "#!/bin/bash \n" + \
                      " cd /home/ubuntu/airfoil-cloud-simulator \n" + \
                      "git reset --hard && git pull \n" + \
-                     "echo '" + self._key + "' >> key.aes\n" + \
-                     "echo '" + self._iv + "' >> iv.txt\n"\
+                     "echo '" + self._config.key + "' >> key.aes\n" + \
+                     "echo '" + self._config.iv + "' >> iv.txt\n"\
                      " su -c 'celery -A workertasks worker -b amqp://cloudworker:worker@" + \
                      server_ip() + "//' ubuntu"
         for i in xrange(0, num):
@@ -63,7 +64,7 @@ class DefaultWorkerManager(WorkerManager):
             self._save_id(worker.id)
 
     def _save_id(self, wid):
-        conn = sqlite3.connect(self._db_name)
+        conn = sqlite3.connect(self._config.db_name)
         c = conn.cursor()
         c.execute("INSERT INTO Workers VALUES(?)", (wid,))
         conn.commit()
@@ -74,12 +75,12 @@ class DefaultWorkerManager(WorkerManager):
         Recover workers saved in database.
         :return:
         """
-        conn = sqlite3.connect(self._db_name)
+        conn = sqlite3.connect(self._config.db_name)
         c = conn.cursor()
         c.execute("SELECT id FROM Workers")
         ids = c.fetchall()
-        for id in ids:
-            self._load_worker(id)
+        for wid in ids:
+            self._load_worker(wid)
         c.execute("DELETE FROM Workers")
         conn.commit()
         conn.close()

@@ -1,6 +1,5 @@
 from Storage import Storage
-from utils import generate_hash
-import sqlite3
+from utils import DBUtil
 import json
 
 
@@ -9,11 +8,7 @@ class KeyValueCache(Storage):
     def __init__(self, db_name):
         Storage.__init__(self)
         self._db_name = db_name
-        conn = self._get_connection()
-        c = conn.cursor()
-        c.execute("CREATE TABLE IF NOT EXISTS Results (name text PRIMARY KEY, value blob)")
-        conn.commit()
-        conn.close()
+        DBUtil.execute_command(db_name, "CREATE TABLE IF NOT EXISTS Results (name text PRIMARY KEY, value blob)")
 
     def save_result(self, model_params, compute_params, result):
         """
@@ -24,7 +19,7 @@ class KeyValueCache(Storage):
         :param result: computation result
         :return: boolean, true if save was successful
         """
-        hash_key = generate_hash(model_params, compute_params)
+        hash_key = self.generate_hash(model_params, compute_params)
         self.save_result_hash(hash_key, json.dumps(result))
         return True
 
@@ -36,13 +31,9 @@ class KeyValueCache(Storage):
         :param model.ComputeParameters.ComputeParameters compute_params: ComputeParameters
         :return: bool true if an entry is found, false otherwise
         """
-        hash_key = generate_hash(model_params, compute_params)
-        conn = self._get_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM Results WHERE name = (?)", (hash_key,))
-        result = cursor.fetchone()
+        hash_key = self.generate_hash(model_params, compute_params)
+        result = DBUtil.execute_command(self._db_name, "SELECT * FROM Results WHERE name = (?)", (hash_key,), "ONE")
         print result
-        conn.close()
         return result is not None
 
     def get_result(self, model_params, compute_params):
@@ -53,23 +44,12 @@ class KeyValueCache(Storage):
         :param model.ComputeParameters.ComputeParameters compute_params: ComputeParameters
         :rtype model.ComputeResult.ComputeResult|None
         """
-        hash_key = generate_hash(model_params, compute_params)
-        conn = self._get_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT value FROM Results WHERE name = (?)", (hash_key,))
-        result = cursor.fetchone()[0]
-        print result
-        conn.close()
-        return json.loads(result)
+        hash_key = self.generate_hash(model_params, compute_params)
+        result = DBUtil.execute_command(self._db_name, "SELECT * FROM Results WHERE name = (?)", (hash_key,), "ONE")
+        return json.loads(result[0])
 
     def save_result_hash(self, hash_key, result):
-        conn = self._get_connection()
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO Results VALUES (?,?)", (hash_key, result))
-        conn.commit()
-        conn.close()
+        DBUtil.execute_command(self._db_name, "INSERT INTO Results VALUES (?,?)", (hash_key, result))
         return True
 
-    def _get_connection(self):
-        return sqlite3.connect(self._db_name)
 

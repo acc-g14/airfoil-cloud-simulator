@@ -36,3 +36,13 @@ class WorkerManager:
         :rtype : int
         """
         pass
+
+    @abc.abstractmethod
+    def get_min_number_of_workers(self):
+        """
+        Returns the minimum number of available workers, either
+        defined by the program or limited by the environment.
+
+        :rtype : int
+        """
+        pass
