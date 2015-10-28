@@ -20,6 +20,7 @@ class Storage:
     @abc.abstractmethod
     def save_result_hash(self, hash_key, result):
         pass
+
     @abc.abstractmethod
     def save_result(self, model_params, compute_params, result):
         """

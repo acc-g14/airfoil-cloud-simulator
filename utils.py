@@ -1,5 +1,8 @@
 from netifaces import interfaces, ifaddresses, AF_INET
 import hashlib
+import string
+import random
+
 
 def find_vm_by_ip(ip, nc):
     """
@@ -11,6 +14,7 @@ def find_vm_by_ip(ip, nc):
             if ip in s.networks["ACC-Course-net"]: return s
     return None
 
+
 def server_ip():
     """
     :rtype : string
@@ -19,6 +23,7 @@ def server_ip():
         addresses = [i['addr'] for i in ifaddresses(ifaceName).setdefault(AF_INET, [{'addr': 'No IP addr'}])]
         if ifaceName == "eth0":
             return addresses[0]
+
 
 def generate_hash(model_params, compute_params):
     """
@@ -47,3 +52,10 @@ def generate_hash(model_params, compute_params):
         builder.update("|")
         builder.update(str(compute_params.num_samples))
         return builder.hexdigest()
+
+
+def id_generator(size, chars=string.ascii_uppercase + string.digits):
+    """
+    http://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits-in-python
+    """
+    return ''.join(random.choice(chars) for _ in range(size))

@@ -1,3 +1,4 @@
+from Crypto.Cipher import AES
 import atexit
 import os
 from flask import Flask, jsonify, request, send_file
@@ -6,7 +7,8 @@ from server.DefaultComputeManager import DefaultComputeManager
 from server.DefaultWorkerManager import DefaultWorkerManager
 from storage.KeyValueCache import KeyValueCache
 from celery.task.control import discard_all
-import json
+from utils import id_generator
+
 
 
 app = Flask(__name__)
@@ -23,8 +25,23 @@ novaconfig = {'username': os.environ['OS_USERNAME'],
               }
 
 kv_storage = KeyValueCache(db_name)
-comp_manager = DefaultComputeManager(kv_storage, swiftconfig)
-worker_manager = DefaultWorkerManager(novaconfig, db_name)
+try:
+    with open("key.aes", "r") as myfile:
+        key = myfile.read().replace("\n", "")
+except IOError:
+    with open("key.aes", "w") as f:
+        key = id_generator(32)
+        f.write(key)
+try:
+    with open("iv.txt", "r") as file:
+        iv = file.read().replace("\n", "")
+except IOError:
+    with open("iv.txt", "w") as file:
+        iv = id_generator(16)
+        file.write(iv)
+crypt_obj = AES.new(key, AES.MODE_ECB, iv)
+comp_manager = DefaultComputeManager(kv_storage, swiftconfig, crypt_obj)
+worker_manager = DefaultWorkerManager(novaconfig, db_name, key, iv)
 
 
 @app.route('/interface', methods=['GET'])
@@ -80,10 +97,11 @@ def get_result(job_id):
     return jsonify(comp_manager.get_result(job_id))
 
 if __name__ == '__main__':
+    worker_manager.load_workers()
     app.run(host='0.0.0.0', debug=True, port=5000)
 
 
 @atexit.register
 def cleanup():
-    worker_manager.save_ips()
+    worker_manager.save_ids()
     discard_all()
