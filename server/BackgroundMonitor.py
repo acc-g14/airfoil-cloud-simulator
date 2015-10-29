@@ -27,7 +27,7 @@ class BackgroundMonitor:
     def worker_online(self, event):
         self._state.event(event)
         name = event['hostname'].split("@")[1]
-        DBUtil.execute_command(self._config.db_name, "UPDATE Workers SET initialized = true WHERE name = ? ", (name,))
+        DBUtil.execute_command(self._config.db_name, "UPDATE Workers SET initialized = 'true' WHERE name = ? ", (name,))
         print "Worker online"
 
     def worker_heartbeat(self, event):
