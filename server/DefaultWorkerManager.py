@@ -50,7 +50,7 @@ class DefaultWorkerManager(WorkerManager):
         for i in xrange(0, num):
             name = "g14worker" + str(self.get_number_of_workers())
             server = self._nc.servers.create(name, image, flavor, userdata=cloud_init)
-            DBUtil.execute_command(self._db_name, "INSERT INTO Workers(id, name, initialized) VALUES (?,?, false)", (server.id, name))
+            DBUtil.execute_command(self._db_name, "INSERT INTO Workers(id, name, initialized) VALUES (?,?, 'false')", (server.id, name))
 
     def load_workers(self):
         """
