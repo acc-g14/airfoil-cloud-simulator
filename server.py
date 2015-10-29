@@ -78,12 +78,11 @@ def get_result(job_id):
 if __name__ == '__main__':
     worker_manager.load_workers()
     c = Celery(broker=config.broker, backend=config.backend)
-    p = Process(target=BackgroundMonitor, args=(c,))
+    p = Process(target=BackgroundMonitor, args=(c, config))
     p.start()
     app.run(host='0.0.0.0', debug=False, port=5000)
 
 
 @atexit.register
 def cleanup():
-    worker_manager.save_ids()
     discard_all()

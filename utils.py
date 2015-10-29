@@ -73,6 +73,8 @@ class DBUtil:
             result = c.fetchall()
         elif fetch == "ONE":
             result = c.fetchone()
+        elif isinstance(fetch, int):
+            result = c.fetchmany(fetch)
         else:
             result = None
         conn.commit()

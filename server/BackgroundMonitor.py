@@ -1,9 +1,10 @@
-
+from utils import DBUtil
 
 class BackgroundMonitor:
 
-    def __init__(self, app):
+    def __init__(self, app, config):
         self._state = app.events.State()
+        self._config = config
         with app.connection() as connection:
             recv = app.events.Receiver(connection, handlers={
                 'task-failed': self.announce_failed_tasks,
@@ -30,6 +31,14 @@ class BackgroundMonitor:
 
     def worker_heartbeat(self, event):
         self._state.event(event)
+        for key, worker in self._state.workers.iteritems():
+            print key
+            if not worker.alive:
+                name = key.split("@")[1]
+                DBUtil.execute_command(self._config.db_name, "DELETE FROM Workers WHERE name = ?", (name,))
+        print self._state.workers
+        print "Heartbeat"
+
         print "Heartbeat"
 
     def worker_offline(self, event):
