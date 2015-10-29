@@ -36,23 +36,21 @@ def generate_hash(model_params, compute_params):
     :param model.ComputeParameters.ComputeParameters compute_params: ComputeParameters
     """
     builder = hashlib.md5()
-    builder.update(str(model_params.angle))
+    builder.update(str(float(model_params.angle)))
     builder.update("|")
     for value in model_params.naca4:
-        builder.update(str(value))
+        builder.update(str(float(value)))
         builder.update("|")
-        builder.update(str(model_params.num_nodes))
-        builder.update("|")
-        builder.update(str(model_params.refinement_level))
-        builder.update("|")
-        builder.update(str(compute_params.speed))
-        builder.update("|")
-        builder.update(str(compute_params.time))
-        builder.update("|")
-        builder.update(str(compute_params.viscosity))
-        builder.update("|")
-        builder.update(str(compute_params.num_samples))
-        return builder.hexdigest()
+    builder.update(str(model_params.num_nodes))
+    builder.update("|")
+    builder.update(str(model_params.refinement_level))
+    builder.update("|")
+    builder.update(str(float(compute_params.speed)))
+    builder.update("|")
+    builder.update(str(float(compute_params.time)))
+    builder.update("|")
+    builder.update(str(float(compute_params.viscosity)))
+    return builder.hexdigest()
 
 
 def id_generator(size, chars=string.ascii_uppercase + string.digits):
