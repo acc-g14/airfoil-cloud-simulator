@@ -32,12 +32,21 @@ def background_monitor(app):
         print('TASK FAILED: %s[%s] %s' % (
             task.name, task.uuid, task.info(), ))
 
-    def announce_event(event):
-        print "ABC"
+    def worker_online(event):
+        print "Worker online"
+
+    def worker_offline(event):
+        print "Worker offline"
+
+    def task_succeeded(event):
+        print "Successful task"
+
     with app.connection() as connection:
         recv = app.events.Receiver(connection, handlers={
                 'task-failed': announce_failed_tasks,
-                '*': announce_event,
+                'task-succeeded': task_succeeded,
+                'worker-online': worker_online,
+                'worker-offline': worker_offline
         })
         recv.capture(limit=None, timeout=None, wakeup=True)
 
