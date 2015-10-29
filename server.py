@@ -2,7 +2,6 @@ import atexit
 from multiprocessing import Process
 from celery import Celery
 from flask import Flask, jsonify, request, send_file
-import time
 from model.UserParameters import UserParameters
 from server.BackgroundMonitor import BackgroundMonitor
 from server.DefaultComputeManager import DefaultComputeManager
@@ -10,7 +9,6 @@ from server.DefaultWorkerManager import DefaultWorkerManager
 from storage.KeyValueCache import KeyValueCache
 from celery.task.control import discard_all
 from model.Config import Config
-from utils import DBUtil
 
 app = Flask(__name__)
 
@@ -19,9 +17,6 @@ config = Config()
 kv_storage = KeyValueCache(config.db_name)
 worker_manager = DefaultWorkerManager(config, config.db_name)
 comp_manager = DefaultComputeManager(worker_manager,kv_storage, config)
-
-
-
 
 
 @app.route('/interface', methods=['GET'])
@@ -69,7 +64,6 @@ def get_status(job_id):
 def get_result(job_id):
     return jsonify(comp_manager.get_result(job_id))
 if __name__ == '__main__':
-    worker_manager.load_workers()
     c = Celery(broker=config.broker, backend=config.backend)
     p = Process(target=BackgroundMonitor, args=(c, config))
     p.start()
