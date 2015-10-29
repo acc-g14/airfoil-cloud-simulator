@@ -8,7 +8,7 @@ class KeyValueCache(Storage):
     def __init__(self, db_name):
         Storage.__init__(self)
         self._db_name = db_name
-        DBUtil.execute_command(db_name, "CREATE TABLE IF NOT EXISTS Results (name text PRIMARY KEY, value blob)")
+        DBUtil.execute_command(db_name, "CREATE TABLE IF NOT EXISTS Results (name TEXT PRIMARY KEY, value BLOB)")
 
     def save_result(self, model_params, compute_params, result):
         """

@@ -1,22 +1,46 @@
-from Crypto.Cipher import AES
 import atexit
-import os
+from multiprocessing import Process
+from celery import Celery
 from flask import Flask, jsonify, request, send_file
+import time
 from model.UserParameters import UserParameters
 from server.DefaultComputeManager import DefaultComputeManager
 from server.DefaultWorkerManager import DefaultWorkerManager
 from storage.KeyValueCache import KeyValueCache
 from celery.task.control import discard_all
 from model.Config import Config
-
+from utils import DBUtil
 
 app = Flask(__name__)
 
 
 config = Config()
 kv_storage = KeyValueCache(config.db_name)
-comp_manager = DefaultComputeManager(kv_storage, config)
 worker_manager = DefaultWorkerManager(config, config.db_name)
+comp_manager = DefaultComputeManager(worker_manager,kv_storage, config)
+
+
+def background_monitor(app):
+    state = app.events.State()
+
+    def announce_failed_tasks(event):
+        state.event(event)
+        # task name is sent only with -received event, and state
+        # will keep track of this for us.
+        task = state.tasks.get(event['uuid'])
+
+        print('TASK FAILED: %s[%s] %s' % (
+            task.name, task.uuid, task.info(), ))
+
+    def announce_event(event):
+        print "ABC"
+    with app.connection() as connection:
+        recv = app.events.Receiver(connection, handlers={
+                'task-failed': announce_failed_tasks,
+                '*': announce_event,
+        })
+        recv.capture(limit=None, timeout=None, wakeup=True)
+
 
 
 @app.route('/interface', methods=['GET'])
@@ -70,9 +94,11 @@ def save_result(hash_key):
 @app.route("/job/<job_id>/result")
 def get_result(job_id):
     return jsonify(comp_manager.get_result(job_id))
-
 if __name__ == '__main__':
     worker_manager.load_workers()
+    c = Celery(broker=config.broker, backend=config.backend)
+    p = Process(target=background_monitor, args=(c,))
+    p.start()
     app.run(host='0.0.0.0', debug=True, port=5000)
 
 

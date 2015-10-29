@@ -1,3 +1,4 @@
+from multiprocessing import Process
 from ComputeManager import ComputeManager
 from model.ComputeParameters import ComputeParameters
 from model.Job import Job
@@ -16,8 +17,9 @@ class ComputationException(BaseException):
 
 
 class DefaultComputeManager(ComputeManager):
-    def __init__(self, storage, config):
+    def __init__(self, worker_manager, storage, config):
         super(DefaultComputeManager, self).__init__(storage)
+        self._worker_manager = worker_manager
         self._config = config
         self._jobs = {}
         #TODO: load results from object store
@@ -75,20 +77,26 @@ class DefaultComputeManager(ComputeManager):
         tasks = self._convert_user_params_to_tasks(user_params, job_id)
         tasklist = []
         for task in tasks:
-            if self._storage.has_result(task.model_params, task.compute_params):
-                task.finished = True
-                task.result = self._storage.get_result(task.model_params, task.compute_params)
-            else:
-                string = json.dumps(self._config.swift_config)
-                while len(string) % 16 != 0:
-                    string += " "
-                config = self._config.crypt_obj.encrypt(string)
-                workertask = workertasks.simulate_airfoil.delay(task.model_params, task.compute_params, config)
-                task.workertask = workertask
-                task.id = workertask.id
+            # check
+            self._start_task(task)
             tasklist.append(task)
-        self._jobs[str(job_id)] = Job(job_id, tasklist, [])
+        job = Job(job_id, tasklist, [])
+        self._jobs[str(job_id)] = job
+        self._start_workers(job)
         return job_id
+
+    def _start_task(self, task):
+        if self._storage.has_result(task.model_params, task.compute_params):
+            task.finished = True
+            task.result = self._storage.get_result(task.model_params, task.compute_params)
+        else:
+            string = json.dumps(self._config.swift_config)
+            while len(string) % 16 != 0:
+                string += " "
+            config = self._config.crypt_obj.encrypt(string)
+            workertask = workertasks.simulate_airfoil.delay(task.model_params, task.compute_params, config)
+            task.workertask = workertask
+            task.id = workertask.id
 
     @staticmethod
     def _convert_user_params_to_tasks(user_params, job):
@@ -110,3 +118,9 @@ class DefaultComputeManager(ComputeManager):
 
     def save_result(self, hash_key, result):
         self._storage.save_result_hash(hash_key, result)
+
+    def _start_workers(self, job):
+        num_not_finished = len([task for task in job.tasks if not task.finished])
+        num_workers = self._worker_manager.get_number_of_workers()
+        if num_not_finished > num_workers:
+            self._worker_manager.set_workers_available(num_not_finished - num_workers)
