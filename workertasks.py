@@ -6,6 +6,7 @@ from worker.create.GmshModelCreator import GmshModelCreator
 from utils import generate_hash
 from model.ModelParameters import ModelParameters
 from model.ComputeParameters import ComputeParameters
+from storage.SwiftStorage import SwiftStorage
 
 from Crypto.Cipher import AES
 from urllib import urlencode
@@ -13,8 +14,8 @@ from urllib import urlencode
 import os
 import pycurl
 import json
-
 import swiftclient.client
+import cPickle
 
 app = Celery("CloudProjectWorker", backend="amqp://", broker="amqp://")
 
@@ -42,6 +43,13 @@ def simulate_airfoil(model_params, compute_params, encrypted_swift_config):
     :param dict swift_config: dict
     """
 
+    #check if results are already in the objectstore
+    config = json.loads(crypt_obj.decrypt(encrypted_swift_config))
+    swift = SwiftStorage(config)
+
+    if swift.has_result(model_params, compute_params):
+        return swift.get_result(model_params, compute_params)
+
     #create a working directory for each task, this is to
     #avoid collisions between workers when they execute the airfoil binary
     root_dir = os.getcwd()
@@ -59,6 +67,7 @@ def simulate_airfoil(model_params, compute_params, encrypted_swift_config):
 
     #curl results back to the server
     #this may be removed in the future
+    print str(model_params.naca4) + " " + str(model_params.angle) + " " + str(model_params.num_nodes) + " " + str(model_params.refinement_level)
     hash_key = generate_hash(model_params, compute_params)
     j_data = json.dumps(result)
     post_data = urlencode({"result": j_data})
@@ -70,13 +79,7 @@ def simulate_airfoil(model_params, compute_params, encrypted_swift_config):
     c.setopt(c.POSTFIELDS, post_data)
     c.perform()
 
-    #save results to object store for availablility
-    config = json.loads(crypt_obj.decrypt(encrypted_swift_config))
-    connection = swiftclient.client.Connection(auth_version=2, **config)
-
     #put result into object store, with the results hash_key as name
-    connection.put_object("G14Container", hash_key, j_data)
-    
-    print "waddup"
-    
-    return result
+    swift.save_result(model_params, compute_params, result)
+
+    return json.dumps(result)
