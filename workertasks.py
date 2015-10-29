@@ -24,7 +24,7 @@ try:
 
     with open("iv.txt", "r") as f:
         iv = f.read()
-    crypt_obj = AES.new(key, AES.MODE_ECB, iv)
+    crypt_obj = AES.new(key.strip(), AES.MODE_ECB, iv.strip())
 except IOError:
     pass
 
