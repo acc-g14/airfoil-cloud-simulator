@@ -4,6 +4,7 @@ from celery import Celery
 from flask import Flask, jsonify, request, send_file
 import time
 from model.UserParameters import UserParameters
+from server.BackgroundMonitor import BackgroundMonitor
 from server.DefaultComputeManager import DefaultComputeManager
 from server.DefaultWorkerManager import DefaultWorkerManager
 from storage.KeyValueCache import KeyValueCache
@@ -20,35 +21,6 @@ worker_manager = DefaultWorkerManager(config, config.db_name)
 comp_manager = DefaultComputeManager(worker_manager,kv_storage, config)
 
 
-def background_monitor(app):
-    state = app.events.State()
-
-    def announce_failed_tasks(event):
-        state.event(event)
-        # task name is sent only with -received event, and state
-        # will keep track of this for us.
-        task = state.tasks.get(event['uuid'])
-
-        print('TASK FAILED: %s[%s] %s' % (
-            task.name, task.uuid, task.info(), ))
-
-    def worker_online(event):
-        print "Worker online"
-
-    def worker_offline(event):
-        print "Worker offline"
-
-    def task_succeeded(event):
-        print "Successful task"
-
-    with app.connection() as connection:
-        recv = app.events.Receiver(connection, handlers={
-                'task-failed': announce_failed_tasks,
-                'task-succeeded': task_succeeded,
-                'worker-online': worker_online,
-                'worker-offline': worker_offline
-        })
-        recv.capture(limit=None, timeout=None, wakeup=True)
 
 
 
@@ -106,7 +78,7 @@ def get_result(job_id):
 if __name__ == '__main__':
     worker_manager.load_workers()
     c = Celery(broker=config.broker, backend=config.backend)
-    p = Process(target=background_monitor, args=(c,))
+    p = Process(target=BackgroundMonitor, args=(c,))
     p.start()
     app.run(host='0.0.0.0', debug=False, port=5000)
 
