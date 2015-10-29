@@ -12,7 +12,7 @@ class BackgroundMonitor:
                 'worker-heartbeat': self.worker_heartbeat,
                 'worker-offline': self.worker_offline
             })
-        recv.capture(limit=None, timeout=None, wakeup=True)
+            recv.capture(limit=None, timeout=None, wakeup=True)
 
     def announce_failed_tasks(self, event):
         self._state.event(event)
