@@ -65,13 +65,6 @@ def get_status(job_id):
     return jsonify(comp_manager.get_status(job_id))
 
 
-@app.route("/save_result/<hash_key>", methods=["POST"])
-def save_result(hash_key):
-    result = request.form['result']
-    comp_manager.save_result(hash_key, result)
-    return "asdsa"
-
-
 @app.route("/job/<job_id>/result")
 def get_result(job_id):
     return jsonify(comp_manager.get_result(job_id))

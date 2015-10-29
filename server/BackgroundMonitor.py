@@ -15,21 +15,11 @@ class BackgroundMonitor:
             })
             recv.capture(limit=None, timeout=None, wakeup=True)
 
-    def announce_failed_tasks(self, event):
-        self._state.event(event)
-        # task name is sent only with -received event, and state
-        # will keep track of this for us.
-        task = self._state.tasks.get(event['uuid'])
-
-        print('TASK FAILED: %s[%s] %s' % (
-            task.name, task.uuid, task.info(), ))
-
     def worker_online(self, event):
         self._state.event(event)
         name = event['hostname'].split("@")[1]
         DBUtil.execute_command(self._config.db_name, "UPDATE Workers SET initialized = 'true' WHERE name = ? ", (name,))
         print DBUtil.execute_command(self._config.db_name, "SELECT COUNT(*) FROM Workers", None, "ONE")[0]
-        print "Worker online"
 
     def worker_heartbeat(self, event):
         self._state.event(event)
@@ -38,20 +28,17 @@ class BackgroundMonitor:
             if not worker.alive:
                 self._delete_worker_by_hostname(key)
         print self._state.workers
-        print "Heartbeat"
 
     def worker_offline(self, event):
         self._state.event(event)
         name = event['hostname'].split("@")[1]
-        print "Worker offline"
 
     def task_succeeded(self, event):
-        self._state.event(event)
+        hash_key = event['uuid']
         result = event['result']
-        DBUtil.execute_command(self._config.db_name, "INSERT INTO Result(name, value) VALUES(?,?)", (uuid, result))
+        DBUtil.execute_command(self._config.db_name, "INSERT INTO Result(name, value) VALUES(?,?)", (hash_key, result))
 
     def _delete_worker_by_hostname(self, hostname):
         name = hostname.split("@")[1]
         DBUtil.execute_command(self._config.db_name, "DELETE FROM Workers WHERE name = ?", (name,))
-        print DBUtil.execute_command(self._config.db_name, "SELECT COUNT(*) FROM Workers", None, "One")[0]
         return True
