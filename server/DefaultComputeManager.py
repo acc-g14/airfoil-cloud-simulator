@@ -5,7 +5,7 @@ from model.Job import Job
 from storage.SwiftStorage import SwiftStorage
 from model.ModelParameters import ModelParameters
 from model.Task import Task
-from utils import server_ip
+from utils import server_ip, generate_hash
 import workertasks
 import uuid
 import numpy
@@ -86,6 +86,7 @@ class DefaultComputeManager(ComputeManager):
         return job_id
 
     def _start_task(self, task):
+        hash_key = generate_hash(task.model_params, task.compute_params)
         if self._storage.has_result(task.model_params, task.compute_params):
             task.finished = True
             task.result = self._storage.get_result(task.model_params, task.compute_params)
@@ -94,7 +95,8 @@ class DefaultComputeManager(ComputeManager):
             while len(string) % 16 != 0:
                 string += " "
             config = self._config.crypt_obj.encrypt(string)
-            workertask = workertasks.simulate_airfoil.delay(task.model_params, task.compute_params, config)
+            workertask = workertasks.simulate_airfoil.apply_async((task.model_params, task.compute_params, config),
+                                                                  task_id=hash_key)
             task.workertask = workertask
             task.id = workertask.id
 

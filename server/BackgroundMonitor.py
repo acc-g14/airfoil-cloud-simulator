@@ -47,7 +47,8 @@ class BackgroundMonitor:
 
     def task_succeeded(self, event):
         self._state.event(event)
-        print "Successful task"
+        result = event['result']
+        DBUtil.execute_command(self._config.db_name, "INSERT INTO Result(name, value) VALUES(?,?)", (uuid, result))
 
     def _delete_worker_by_hostname(self, hostname):
         name = hostname.split("@")[1]
