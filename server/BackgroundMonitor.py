@@ -28,6 +28,7 @@ class BackgroundMonitor:
         self._state.event(event)
         name = event['hostname'].split("@")[1]
         DBUtil.execute_command(self._config.db_name, "UPDATE Workers SET initialized = 'true' WHERE name = ? ", (name,))
+        print DBUtil.execute_command(self._config.db_name, "SELECT COUNT(*) FROM Workers", None, "One")[0]
         print "Worker online"
 
     def worker_heartbeat(self, event):
@@ -51,4 +52,5 @@ class BackgroundMonitor:
     def _delete_worker_by_hostname(self, hostname):
         name = hostname.split("@")[1]
         DBUtil.execute_command(self._config.db_name, "DELETE FROM Workers WHERE name = ?", (name,))
+        print DBUtil.execute_command(self._config.db_name, "SELECT COUNT(*) FROM Workers", None, "One")[0]
         return True
