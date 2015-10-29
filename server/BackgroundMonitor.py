@@ -26,7 +26,8 @@ class BackgroundMonitor:
 
     def worker_online(self, event):
         self._state.event(event)
-        print self._state
+        name = event['hostname'].split("@")[1]
+        DBUtil.execute_command(self._config.db_name, "UPDATE Workers SET initialized = true WHERE name = ? ", (name,))
         print "Worker online"
 
     def worker_heartbeat(self, event):
@@ -34,17 +35,20 @@ class BackgroundMonitor:
         for key, worker in self._state.workers.iteritems():
             print key
             if not worker.alive:
-                name = key.split("@")[1]
-                DBUtil.execute_command(self._config.db_name, "DELETE FROM Workers WHERE name = ?", (name,))
+                self._delete_worker_by_hostname(key)
         print self._state.workers
-        print "Heartbeat"
-
         print "Heartbeat"
 
     def worker_offline(self, event):
         self._state.event(event)
+        name = event['hostname'].split("@")[1]
         print "Worker offline"
 
     def task_succeeded(self, event):
         self._state.event(event)
         print "Successful task"
+
+    def _delete_worker_by_hostname(self, hostname):
+        name = hostname.split("@")[1]
+        DBUtil.execute_command(self._config.db_name, "DELETE FROM Workers WHERE name = ?", (name,))
+        return True

@@ -12,7 +12,7 @@ class DefaultWorkerManager(WorkerManager):
     def __init__(self, config, db_name):
         WorkerManager.__init__(self)
         self._db_name = db_name
-        DBUtil.execute_command(db_name, "CREATE TABLE IF NOT EXISTS Workers (id text PRIMARY KEY, name text)")
+        DBUtil.execute_command(db_name, "CREATE TABLE IF NOT EXISTS Workers (id text PRIMARY KEY, name text, initialized boolean)")
         self._config = config
         self._nc = Client('2', **config.nova_config)
 
@@ -50,7 +50,7 @@ class DefaultWorkerManager(WorkerManager):
         for i in xrange(0, num):
             name = "g14worker" + str(self.get_number_of_workers())
             server = self._nc.servers.create(name, image, flavor, userdata=cloud_init)
-            DBUtil.execute_command(self._db_name, "INSERT INTO Workers(id, name) VALUES (?,?)", (server.id, name))
+            DBUtil.execute_command(self._db_name, "INSERT INTO Workers(id, name, initialized) VALUES (?,?, false)", (server.id, name))
 
     def load_workers(self):
         """
