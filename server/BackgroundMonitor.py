@@ -1,6 +1,6 @@
 from storage.KeyValueCache import KeyValueCache
 from utils import DBUtil
-
+import json
 
 class BackgroundMonitor:
     """
@@ -51,6 +51,7 @@ class BackgroundMonitor:
         """
         hash_key = event['uuid']
         result = event['result']
+        print json.loads(result)
         self._storage.save_result_hash(hash_key, result)
         print "Task succeeded:" + hash_key
 
