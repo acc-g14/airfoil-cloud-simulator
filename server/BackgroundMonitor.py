@@ -38,7 +38,8 @@ class BackgroundMonitor:
         :param event:
         """
         self._state.event(event)
-        name = event['hostname'].split("@")[1]
+        print event
+        name = event['hostname']
         self._delete_worker_by_hostname(name)
 
     def task_succeeded(self, event):
@@ -48,7 +49,7 @@ class BackgroundMonitor:
         """
         hash_key = event['uuid']
         result = event['result']
-        DBUtil.execute_command(self._config.db_name, "INSERT INTO Result(name, value) VALUES(?,?)", (hash_key, result))
+        DBUtil.execute_command(self._config.db_name, "INSERT INTO Results(name, value) VALUES(?,?)", (hash_key, result))
 
     def _delete_worker_by_hostname(self, hostname):
         """
