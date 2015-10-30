@@ -51,7 +51,7 @@ class BackgroundMonitor:
         :param event:
         """
         self._state.event(event)
-        print dir(self._state)
+        print dir(self._state.tasks)
         hash_key = event['uuid']
         result = event['result']
         print json.loads(result)
