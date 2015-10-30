@@ -45,10 +45,17 @@ class KeyValueCache(Storage):
         :rtype model.ComputeResult.ComputeResult|None
         """
         hash_key = self.generate_hash(model_params, compute_params)
-        result = DBUtil.execute_command(self._db_name, "SELECT * FROM Results WHERE name = (?)", (hash_key,), "ONE")
+        result = DBUtil.execute_command(self._db_name,
+                                        "SELECT value FROM Results WHERE name = (?)", (hash_key,), "ONE")
+        print "result: " + str(result[0])
         return json.loads(result[0])
 
     def save_result_hash(self, hash_key, result):
+        precheck_result = DBUtil.execute_command(self._db_name,
+                                                 "SELECT * FROM Results WHERE name = (?)", (hash_key,), "ONE")
+        if precheck_result is not None:
+            print "result already in database"
+            return True
         DBUtil.execute_command(self._db_name, "INSERT INTO Results VALUES (?,?)", (hash_key, result))
         return True
 

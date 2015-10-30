@@ -1,6 +1,7 @@
 from ComputeManager import ComputeManager
 from model.ComputeParameters import ComputeParameters
 from model.Job import Job
+from storage.SwiftStorage import SwiftStorage
 from model.ModelParameters import ModelParameters
 from model.Task import Task
 from utils import server_ip
@@ -19,6 +20,11 @@ class DefaultComputeManager(ComputeManager):
         super(DefaultComputeManager, self).__init__(storage)
         self._config = config
         self._jobs = {}
+        #TODO: load results from object store
+        swift = SwiftStorage(config.swift_config)
+        for objectName in swift.get_entries():
+            objectData = swift.get_result_hash(objectName)
+            storage.save_result_hash(objectName, objectData)
 
     def stop_computation(self, job_id):
         job = self._jobs.get(job_id)
