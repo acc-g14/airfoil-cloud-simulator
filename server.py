@@ -65,7 +65,7 @@ def get_result(job_id):
     return jsonify(comp_manager.get_result(job_id))
 if __name__ == '__main__':
     c = Celery(broker=config.broker, backend=config.backend)
-    p = Process(target=BackgroundMonitor, args=(c, config, kv_storage))
+    p = Process(target=BackgroundMonitor, args=(c, config))
     p.start()
     app.run(host='0.0.0.0', debug=False, port=5000)
 
