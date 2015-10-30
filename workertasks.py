@@ -44,8 +44,8 @@ def simulate_airfoil(model_params, compute_params, encrypted_swift_config):
     """
 
     #check if results are already in the objectstore
-    config = json.loads(crypt_obj.decrypt(encrypted_swift_config))
-    swift = SwiftStorage(config)
+    swift_config = json.loads(crypt_obj.decrypt(encrypted_swift_config))
+    swift = SwiftStorage(swift_config)
 
     if swift.has_result(model_params, compute_params):
         return swift.get_result(model_params, compute_params)
@@ -54,7 +54,8 @@ def simulate_airfoil(model_params, compute_params, encrypted_swift_config):
     #avoid collisions between workers when they execute the airfoil binary
     root_dir = os.getcwd()
     working_dir = root_dir + "/workdir/" + str(model_params.job) + "/a" + str(model_params.angle)
-    if not os.path.exists(working_dir): os.makedirs(working_dir)
+    if not os.path.exists(working_dir):
+        os.makedirs(working_dir)
     os.chdir(working_dir)
 
     msh_file = creator.create_model(model_params)
@@ -67,17 +68,7 @@ def simulate_airfoil(model_params, compute_params, encrypted_swift_config):
 
     #curl results back to the server
     #this may be removed in the future
-    print str(model_params.naca4) + " " + str(model_params.angle) + " " + str(model_params.num_nodes) + " " + str(model_params.refinement_level)
     hash_key = generate_hash(model_params, compute_params)
-    j_data = json.dumps(result)
-    post_data = urlencode({"result": j_data})
-
-    url = compute_params.server_ip + ":5000/save_result/" + hash_key
-
-    c = pycurl.Curl()
-    c.setopt(c.URL, url)
-    c.setopt(c.POSTFIELDS, post_data)
-    c.perform()
 
     #put result into object store, with the results hash_key as name
     swift.save_result(model_params, compute_params, result)
