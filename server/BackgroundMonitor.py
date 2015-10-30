@@ -11,8 +11,8 @@ class BackgroundMonitor:
     def __init__(self, app, config):
         self._state = app.events.State()
         self._config = config
-        self._init_event_receiver(app)
         self._storage = KeyValueCache(config.db_name)
+        self._init_event_receiver(app)
 
     def worker_online(self, event):
         """
