@@ -14,10 +14,8 @@ from urllib import urlencode
 import os
 import pycurl
 import json
-from model.Config import Config
 
-config = Config()
-app = Celery("CloudProjectWorker", backend=config.backend, broker=config.broker)
+app = Celery("CloudProjectWorker", backend="amqp://", broker="amqp://")
 
 creator = GmshModelCreator()
 converter = GmshDolfinConverter()
