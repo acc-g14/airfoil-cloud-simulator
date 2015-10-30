@@ -109,13 +109,18 @@ class DefaultComputeManager(ComputeManager):
         :return: model.Task.Task[]
         """
         tasks = []
-        compute_parameters = ComputeParameters(user_params.num_samples, user_params.viscosity, user_params.speed, user_params.time, server_ip())
+        compute_parameters = ComputeParameters(user_params.num_samples, user_params.viscosity, user_params.speed,
+                                               user_params.time, server_ip())
         angles = numpy.arange(user_params.min_angle, user_params.max_angle, user_params.step)
         for angle in angles:
             model_parameters = ModelParameters(user_params.naca4, job, angle, user_params.num_nodes,
                                                user_params.refinement_level)
             task = Task(None, None, model_parameters, compute_parameters, None)
             tasks.append(task)
+        model_parameters = ModelParameters(user_params.naca4, job, user_params.max_angle, user_params.num_nodes,
+                                           user_params.refinement_level)
+        task = Task(None, None, model_parameters, compute_parameters, None)
+        tasks.append(task)
         return tasks
 
     def save_result(self, hash_key, result):
