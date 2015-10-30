@@ -7,10 +7,11 @@ class BackgroundMonitor:
     or offline.
     """
 
-    def __init__(self, app, config):
+    def __init__(self, app, config, storage):
         self._state = app.events.State()
         self._config = config
         self._init_event_receiver(app)
+        self._storage = storage
 
     def worker_online(self, event):
         """
@@ -49,7 +50,8 @@ class BackgroundMonitor:
         """
         hash_key = event['uuid']
         result = event['result']
-        DBUtil.execute_command(self._config.db_name, "INSERT INTO Results(name, value) VALUES(?,?)", (hash_key, result))
+        self._storage.save_result_hash(hash_key, result)
+        print "Task succeeded:" + hash_key
 
     def _delete_worker_by_hostname(self, hostname):
         """

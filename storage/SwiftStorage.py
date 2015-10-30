@@ -30,8 +30,6 @@ class SwiftStorage(Storage):
         response, objects = self.connection.get_container("G14Container")
         objects = map(lambda x: x["name"], objects)
         hash_key = generate_hash(model_params, compute_params)
-        for o in objects:
-            print o
         return hash_key in objects
 
     def generate_hash(self, model_params, compute_params):
