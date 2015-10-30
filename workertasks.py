@@ -36,7 +36,7 @@ except IOError:
 
 
 @app.task()
-def simulate_airfoil(model_params, compute_params, encrypted_swift_config):
+def simulate_airfoil(model_params, compute_params, encrypted_swift_config, container):
     """
     :param model.ModelParameters.ModelParameters model_params: ModelParameters
     :param model.ComputeParameters.ComputeParameters compute_params: ComputeParameters
@@ -45,7 +45,7 @@ def simulate_airfoil(model_params, compute_params, encrypted_swift_config):
 
     #check if results are already in the objectstore
     swift_config = json.loads(crypt_obj.decrypt(encrypted_swift_config))
-    swift = SwiftStorage(swift_config)
+    swift = SwiftStorage(swift_config, container)
 
     if swift.has_result(model_params, compute_params):
         return swift.get_result(model_params, compute_params)
@@ -65,10 +65,6 @@ def simulate_airfoil(model_params, compute_params, encrypted_swift_config):
 
     #reset working directory
     os.chdir(root_dir)
-
-    #curl results back to the server
-    #this may be removed in the future
-    hash_key = generate_hash(model_params, compute_params)
 
     #put result into object store, with the results hash_key as name
     swift.save_result(model_params, compute_params, result)

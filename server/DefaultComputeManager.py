@@ -22,8 +22,7 @@ class DefaultComputeManager(ComputeManager):
         self._worker_manager = worker_manager
         self._config = config
         self._jobs = {}
-        #TODO: load results from object store
-        swift = SwiftStorage(config.swift_config)
+        swift = SwiftStorage(config.swift_config, config.container)
         for objectName in swift.get_entries():
             objectData = swift.get_result_hash(objectName)
             storage.save_result_hash(objectName, objectData)
@@ -95,7 +94,8 @@ class DefaultComputeManager(ComputeManager):
             while len(string) % 16 != 0:
                 string += " "
             config = self._config.crypt_obj.encrypt(string)
-            workertask = workertasks.simulate_airfoil.apply_async((task.model_params, task.compute_params, config),
+            workertask = workertasks.simulate_airfoil.apply_async((task.model_params, task.compute_params,
+                                                                   config, self._config.container),
                                                                   task_id=hash_key)
             task.workertask = workertask
             task.id = workertask.id
