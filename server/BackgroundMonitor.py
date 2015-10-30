@@ -1,3 +1,4 @@
+from storage.KeyValueCache import KeyValueCache
 from utils import DBUtil
 
 
@@ -7,11 +8,11 @@ class BackgroundMonitor:
     or offline.
     """
 
-    def __init__(self, app, config, storage):
+    def __init__(self, app, config):
         self._state = app.events.State()
         self._config = config
         self._init_event_receiver(app)
-        self._storage = storage
+        self._storage = KeyValueCache(config.db_name)
 
     def worker_online(self, event):
         """
