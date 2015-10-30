@@ -2,6 +2,7 @@ from storage.KeyValueCache import KeyValueCache
 from utils import DBUtil
 import json
 
+
 class BackgroundMonitor:
     """
     Class which should be executed as background task. Updates task results and keeps track of workers going on-
@@ -49,6 +50,8 @@ class BackgroundMonitor:
         Event handler when task succeeds
         :param event:
         """
+        self._state.event(event)
+        print dir(self._state)
         hash_key = event['uuid']
         result = event['result']
         print json.loads(result)
