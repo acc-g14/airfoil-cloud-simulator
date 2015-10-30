@@ -9,7 +9,6 @@ import workertasks
 import uuid
 import numpy
 import json
-import swiftclient.client
 
 
 class ComputationException(BaseException):
