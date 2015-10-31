@@ -1,6 +1,7 @@
 from threading import Thread
 import time
 from model.Config import Config
+from utils import DBUtil
 
 
 class BackgroundMonitor():
@@ -15,4 +16,10 @@ class BackgroundMonitor():
             pass
 
     def do_some_work(self):
-        pass
+        avg_worker_time = self._get_average_worker_startup_time()
+
+    def _get_average_worker_startup_time(self):
+        results = DBUtil.execute_command(self._config.db_name, "SELECT starttime FROM Workers WHERE starttime != NULL", None, "ALL");
+        for result in results:
+            print result
+        return results
