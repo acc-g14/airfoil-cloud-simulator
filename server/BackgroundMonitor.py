@@ -39,9 +39,9 @@ class BackgroundMonitor():
             return 0.0
 
     def _get_current_queue_length(self):
-        results = DBUtil.execute_command(self._config.db_name, "SELECT COUNT(*) FROM Results WHERE value IS NULL",
+        results = DBUtil.execute_command(self._config.db_name, "SELECT COUNT(*) FROM Results WHERE value = 'null'",
                                          None, "ONE")
-        return results[0][0]
+        return results[0]
 
     def _get_num_current_workers(self):
         results = DBUtil.execute_command(self._config.db_name, "SELECT COUNT(*) FROM Workers", None, "ONE")
