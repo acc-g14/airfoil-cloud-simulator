@@ -34,7 +34,7 @@ class DatabaseStorage(Storage):
         hash_key = self.generate_hash(model_params, compute_params)
         result = DBUtil.execute_command(self._db_name, "SELECT value FROM Results WHERE name = (?)", (hash_key,), "ONE")
         print result
-        return result is not None and result[0] is not None
+        return result is not None and result[0] != 'null'
 
     def get_result(self, model_params, compute_params):
         """
@@ -61,7 +61,7 @@ class DatabaseStorage(Storage):
                 DBUtil.execute_command("UPDATE Results SET started = ? WHERE name = ?", (started,hash_key))
             if endtime is not None:
                 runtime = endtime - precheck_result[0]
-                print "RUNTIME: " + runtime
+                print "RUNTIME: " + str(runtime)
                 DBUtil.execute_command("UPDATE Results SET runtime = ? WHERE name = ?", (runtime, hash_key))
             print "result already in database"
             return True
