@@ -53,7 +53,7 @@ class DefaultWorkerManager(WorkerManager):
             name = "g14worker" + str(self.get_number_of_workers())
             server = self._nc.servers.create(name, image, flavor, userdata=cloud_init)
             DBUtil.execute_command(self._db_name,
-                                   "INSERT INTO Workers(id, name, initialized, started) VALUES (?,?, 'false')",
+                                   "INSERT INTO Workers(id, name, initialized, started) VALUES (?,?, 'false', ?)",
                                    (server.id, name, time.time()))
 
     def _shutdown_workers(self, num_workers):
