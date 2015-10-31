@@ -58,7 +58,7 @@ class DefaultComputeManager(ComputeManager):
             total_tasks = len(job.tasks)
             for task in job.tasks:
                 if self._storage.has_result(task.model_params, task.compute_params):
-                    result = json.loads(self._storage.get_result(task.model_params, task.compute_params))[0]
+                    result = json.loads(self._storage.get_result(task.model_params, task.compute_params)[0])
                     finished_tasks += 1
                     taskresults.append(result)
             return {"finished_tasks": finished_tasks,
@@ -81,7 +81,8 @@ class DefaultComputeManager(ComputeManager):
             tasklist.append(task)
         job = Job(job_id, tasklist, [])
         self._jobs[str(job_id)] = job
-        self._start_workers(job)
+        # TODO: we don't want workers to be started here anymore
+        #self._start_workers(job)
         return job_id
 
     def _start_task(self, task):
