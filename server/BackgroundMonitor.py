@@ -38,7 +38,7 @@ class BackgroundMonitor():
             #TODO
             pass
         elif current_queue_length > 0 and num_current_workers == 0:
-            self._worker_manager.set_workers_available(int(current_queue_length / 2))
+            self._worker_manager.set_workers_available(round(current_queue_length / 2))
         print str(avg_worker_time)
         print str(current_queue_length)
         print str(num_current_workers)

@@ -60,7 +60,10 @@ class DatabaseStorage(Storage):
             if started is not None:
                 DBUtil.execute_command(self._db_name, "UPDATE Results SET started = ?, value = ? WHERE name = ?", (started, hash_key))
             if endtime is not None:
-                runtime = endtime - precheck_result[0]
+                if precheck_result[0] is not None:
+                    runtime = endtime - precheck_result[0]
+                else:
+                    runtime = None
                 print "RUNTIME: " + str(runtime)
                 print "HASHKEY: " + str(hash_key)
                 DBUtil.execute_command(self._db_name, "UPDATE Results SET runtime = ?, value = ? WHERE name = ?", (str(runtime), result, str(hash_key)))
