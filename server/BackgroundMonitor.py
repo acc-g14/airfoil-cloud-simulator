@@ -9,6 +9,8 @@ class BackgroundMonitor():
     def __init__(self):
         self._config = Config()
         self._worker_manager = DefaultWorkerManager(self._config, self._config.db_name)
+        if self._get_num_current_workers() < self._config.min_workers:
+            self._worker_manager.set_workers_available(self._config.min_workers)
         try:
             while True:
                 time.sleep(10)
@@ -18,6 +20,8 @@ class BackgroundMonitor():
             pass
 
     def do_some_work(self):
+        self._worker_manager.delete_terminated_workers()
+        self._worker_manager.delete_inactive_workers()
         avg_worker_time = self._get_average_worker_startup_time()
         num_current_workers = self._get_num_current_workers()
         current_queue_length = self._get_current_queue_length()
@@ -45,8 +49,6 @@ class BackgroundMonitor():
         print str(avg_task_time)
 
     def _get_average_worker_startup_time(self):
-        DBUtil.execute_command(self._config.db_name,
-                               "DELETE FROM Workers WHERE initialized = 'true' AND heartbeat < ?", (time.time() - 60.0,))
         results = DBUtil.execute_command(self._config.db_name,
                                          "SELECT starttime FROM Workers WHERE starttime IS NOT NULL", None, "ALL")
         if len(results) > 0:

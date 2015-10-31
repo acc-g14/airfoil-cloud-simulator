@@ -39,13 +39,13 @@ class EventProcessor:
         Event handler for received heartbeat from a worker
         :param event:
         """
-        self._state.event(event)
+        hostname = event['hostname']
+        active = event['active']
+        self._update_worker(hostname, active)
         # check for offline workers and delete them from the database
         for key, worker in self._state.workers.iteritems():
             if not worker.alive:
                 self._delete_worker_by_hostname(key)
-            else:
-                self._update_worker(key)
 
     def worker_offline(self, event):
         """
@@ -53,7 +53,6 @@ class EventProcessor:
         :param event:
         """
         self._state.event(event)
-        print event
         name = event['hostname']
         self._delete_worker_by_hostname(name)
 
@@ -61,7 +60,6 @@ class EventProcessor:
         self._state.event(event)
         hash_key = event['uuid']
         started = event['timestamp']
-        print event
         print "task started"
         DBUtil.execute_command(self._config.db_name, "UPDATE Results SET started = ? WHERE name = ?", (started, hash_key))
 
@@ -102,9 +100,10 @@ class EventProcessor:
             })
             recv.capture(limit=None, timeout=None, wakeup=True)
 
-    def _update_worker(self, hostname):
+    def _update_worker(self, hostname, active):
         name = hostname.split("@")[1]
         heartbeat = time.time()
-        print heartbeat
-        print name
-        DBUtil.execute_command(self._config.db_name, "UPDATE Workers SET heartbeat = ? WHERE name = ?", (heartbeat, name))
+        if active > 0:
+            DBUtil.execute_command(self._config.db_name, "UPDATE Workers SET heartbeat = ?, last_active = ? WHERE name = ?", (heartbeat, heartbeat, name))
+        else:
+            DBUtil.execute_command(self._config.db_name, "UPDATE Workers SET heartbeat = ? WHERE name = ?", (heartbeat, name))

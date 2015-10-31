@@ -14,7 +14,7 @@ class DefaultWorkerManager(WorkerManager):
         self._db_name = db_name
         DBUtil.execute_command(db_name,
                                "CREATE TABLE IF NOT EXISTS Workers " +
-                               "(id text PRIMARY KEY, name text, initialized boolean, started DATETIME, starttime float, heartbeat DATETIME)")
+                               "(id text PRIMARY KEY, name text, initialized boolean, started DATETIME, starttime float, heartbeat DATETIME, last_active DATETIME)")
         self._config = config
         self._nc = Client('2', **config.nova_config)
 
@@ -60,8 +60,20 @@ class DefaultWorkerManager(WorkerManager):
         ids = DBUtil.execute_command(self._db_name, "SELECT id FROM Workers", None, num_workers)
         for row in ids:
             serverid = row[0]
-            try:
-                DBUtil.execute_command(self._db_name, "DELETE FROM Workers WHERE id = ?", (serverid,))
-                self._nc.servers.find(id=serverid).delete()
-            except NotFound:
-                print "worker is not-existent"
+            self._delete_worker(serverid)
+
+    def _delete_worker(self, workerid):
+        try:
+            DBUtil.execute_command(self._db_name, "DELETE FROM Workers WHERE id = ?", (workerid,))
+            self._nc.servers.find(id=workerid).delete()
+        except NotFound:
+            print "worker is not-existent"
+            
+    def delete_inactive_workers(self):
+        results = DBUtil.execute_command("SELECT id FROM Workers WHERE active <  ?", (time.time() - 60.0,), "ALL")
+        for result in results:
+            self._delete_worker(result[0])
+
+    def delete_terminated_workers(self):
+        DBUtil.execute_command(self._config.db_name,
+                               "DELETE FROM Workers WHERE initialized = 'true' AND heartbeat < ?", (time.time() - 60.0,))
