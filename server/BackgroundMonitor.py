@@ -23,5 +23,5 @@ class BackgroundMonitor():
                                          "SELECT starttime FROM Workers WHERE starttime IS NOT NULL", None, "ALL")
         sum = 0.0
         for result in results:
-            sum += result
+            sum += result[0]
         return sum / float(len(results))
