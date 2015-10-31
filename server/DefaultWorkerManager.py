@@ -49,7 +49,7 @@ class DefaultWorkerManager(WorkerManager):
                      "echo '" + self._config.iv + "' >> iv.txt\n"\
                      " su -c 'celery -A workertasks worker -b amqp://cloudworker:worker@" + \
                      server_ip() + "//' ubuntu"
-        for i in xrange(0, num):
+        for i in xrange(0, int(num)):
             name = "g14worker" + str(self.get_number_of_workers())
             server = self._nc.servers.create(name, image, flavor, userdata=cloud_init)
             DBUtil.execute_command(self._db_name,
@@ -63,11 +63,12 @@ class DefaultWorkerManager(WorkerManager):
             self._delete_worker(serverid)
 
     def _delete_worker(self, workerid):
-        try:
-            DBUtil.execute_command(self._db_name, "DELETE FROM Workers WHERE id = ?", (workerid,))
-            self._nc.servers.find(id=workerid).delete()
-        except NotFound:
-            print "worker is not-existent"
+        if self.get_number_of_workers() > self.get_min_number_of_workers():
+            try:
+                DBUtil.execute_command(self._db_name, "DELETE FROM Workers WHERE id = ?", (workerid,))
+                self._nc.servers.find(id=workerid).delete()
+            except NotFound:
+                print "worker is not-existent"
             
     def delete_inactive_workers(self):
         results = DBUtil.execute_command(self._db_name, "SELECT id FROM Workers WHERE initialized = 'true' AND active <  ?", (time.time() - 60.0,), "ALL")
