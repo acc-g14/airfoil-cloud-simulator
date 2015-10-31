@@ -58,7 +58,7 @@ class DefaultComputeManager(ComputeManager):
             total_tasks = len(job.tasks)
             for task in job.tasks:
                 if self._storage.has_result(task.model_params, task.compute_params):
-                    result = self._storage.get_result(task.model_params, task.compute_params)
+                    result = json.loads(self._storage.get_result(task.model_params, task.compute_params))[0]
                     finished_tasks += 1
                     taskresults.append(result)
             return {"finished_tasks": finished_tasks,
@@ -88,7 +88,7 @@ class DefaultComputeManager(ComputeManager):
         hash_key = generate_hash(task.model_params, task.compute_params)
         if self._storage.has_result(task.model_params, task.compute_params):
             task.finished = True
-            task.result = self._storage.get_result(task.model_params, task.compute_params)
+            task.result = json.loads(self._storage.get_result(task.model_params, task.compute_params))
         else:
             string = json.dumps(self._config.swift_config)
             while len(string) % 16 != 0:
@@ -97,6 +97,7 @@ class DefaultComputeManager(ComputeManager):
             workertask = workertasks.simulate_airfoil.apply_async((task.model_params, task.compute_params,
                                                                    config, self._config.container),
                                                                   task_id=hash_key)
+            self._storage.save_result(task.model_params, task.compute_params, None)
             task.workertask = workertask
             task.id = workertask.id
 

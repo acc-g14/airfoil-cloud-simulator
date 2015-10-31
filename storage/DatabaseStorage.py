@@ -3,14 +3,14 @@ from utils import DBUtil
 import json
 
 
-class KeyValueCache(Storage):
+class DatabaseStorage(Storage):
 
     def __init__(self, db_name):
         Storage.__init__(self)
         self._db_name = db_name
-        DBUtil.execute_command(db_name, "CREATE TABLE IF NOT EXISTS Results (name TEXT PRIMARY KEY, value BLOB)")
+        DBUtil.execute_command(db_name, "CREATE TABLE IF NOT EXISTS Results (name TEXT PRIMARY KEY, value BLOB, started DATETIME, runtime FLOAT)")
 
-    def save_result(self, model_params, compute_params, result):
+    def save_result(self, model_params, compute_params, result, started=None, runtime=None):
         """
         This method stores the result identified by the parameters to the storage.
 
@@ -20,7 +20,7 @@ class KeyValueCache(Storage):
         :return: boolean, true if save was successful
         """
         hash_key = self.generate_hash(model_params, compute_params)
-        self.save_result_hash(hash_key, json.dumps(result))
+        self.save_result_hash(hash_key, json.dumps(result), started, runtime)
         return True
 
     def has_result(self, model_params, compute_params):
@@ -32,9 +32,9 @@ class KeyValueCache(Storage):
         :return: bool true if an entry is found, false otherwise
         """
         hash_key = self.generate_hash(model_params, compute_params)
-        result = DBUtil.execute_command(self._db_name, "SELECT * FROM Results WHERE name = (?)", (hash_key,), "ONE")
+        result = DBUtil.execute_command(self._db_name, "SELECT value FROM Results WHERE name = (?)", (hash_key,), "ONE")
         print result
-        return result is not None
+        return result is not None and result[0] is not None
 
     def get_result(self, model_params, compute_params):
         """
@@ -46,17 +46,25 @@ class KeyValueCache(Storage):
         """
         hash_key = self.generate_hash(model_params, compute_params)
         result = DBUtil.execute_command(self._db_name,
-                                        "SELECT value FROM Results WHERE name = (?)", (hash_key,), "ONE")
+                                        "SELECT value, runtime, started FROM Results WHERE name = (?)",
+                                        (hash_key,), "ONE")
         print "result: " + str(result[0])
-        return json.loads(result[0])
+        print "runtime: " + str(result[1])
+        print "started: " + str(result[2])
+        return result
 
-    def save_result_hash(self, hash_key, result):
+    def save_result_hash(self, hash_key, result, started=None, runtime=None):
         precheck_result = DBUtil.execute_command(self._db_name,
                                                  "SELECT * FROM Results WHERE name = (?)", (hash_key,), "ONE")
         if precheck_result is not None:
+            if started is not None:
+                DBUtil.execute_command("UPDATE Results SET started = ? WHERE name = ?", (started,hash_key))
+            if runtime is not None:
+                DBUtil.execute_command("UPDATE Results SET runtime = ? WHERE name = ?", (runtime, hash_key))
             print "result already in database"
             return True
-        DBUtil.execute_command(self._db_name, "INSERT INTO Results VALUES (?,?)", (hash_key, result))
+        DBUtil.execute_command(self._db_name, "INSERT INTO Results(name, value, started, runtime) VALUES (?,?,?,?)",
+                               (hash_key, result, started, runtime))
         return True
 
 

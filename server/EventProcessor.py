@@ -1,5 +1,5 @@
 from celery.result import AsyncResult
-from storage.KeyValueCache import KeyValueCache
+from storage.DatabaseStorage import DatabaseStorage
 from utils import DBUtil
 
 
@@ -12,7 +12,7 @@ class EventProcessor:
     def __init__(self, app, config):
         self._state = app.events.State()
         self._config = config
-        self._storage = KeyValueCache(config.db_name)
+        self._storage = DatabaseStorage(config.db_name)
         self._init_event_receiver(app)
 
     def worker_online(self, event):
@@ -45,6 +45,15 @@ class EventProcessor:
         name = event['hostname']
         self._delete_worker_by_hostname(name)
 
+    def task_started(self, event):
+        self._state.event(event)
+        hash_key = event['uuid']
+        started = event['timestamp']
+        print event
+        print "task started"
+        DBUtil.execute_command(self._config.db_name, "UPDATE Results SET started = ? WHERE name = ?", (started, hash_key))
+
+
     def task_succeeded(self, event):
         """
         Event handler when task succeeds
@@ -74,6 +83,7 @@ class EventProcessor:
         with app.connection() as connection:
             recv = app.events.Receiver(connection, handlers={
                 'task-succeeded': self.task_succeeded,
+                'task-started': self.task_started,
                 'worker-online': self.worker_online,
                 'worker-heartbeat': self.worker_heartbeat,
                 'worker-offline': self.worker_offline

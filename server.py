@@ -1,12 +1,14 @@
 import atexit
 from multiprocessing import Process
+from threading import Timer
 from celery import Celery
 from flask import Flask, jsonify, request, send_file
 from model.UserParameters import UserParameters
+from server.BackgroundMonitor import BackgroundMonitor
 from server.EventProcessor import EventProcessor
 from server.DefaultComputeManager import DefaultComputeManager
 from server.DefaultWorkerManager import DefaultWorkerManager
-from storage.KeyValueCache import KeyValueCache
+from storage.DatabaseStorage import DatabaseStorage
 from celery.task.control import discard_all
 from model.Config import Config
 
@@ -14,7 +16,7 @@ app = Flask(__name__)
 
 
 config = Config()
-kv_storage = KeyValueCache(config.db_name)
+kv_storage = DatabaseStorage(config.db_name)
 worker_manager = DefaultWorkerManager(config, config.db_name)
 comp_manager = DefaultComputeManager(worker_manager,kv_storage, config)
 
@@ -67,12 +69,10 @@ def get_result(job_id):
 if __name__ == '__main__':
     c = Celery(broker=config.broker, backend=config.backend)
     p = Process(target=EventProcessor, args=(c, config))
-    #b = Process(target=BackgroundMonitor, args=(,))
-
+    b = Process(target=BackgroundMonitor)
     p.start()
-    #b.start()
-
-    app.run(host='0.0.0.0', debug=False, port=5000)
+    b.start()
+    app.run(host='0.0.0.0', debug=True, port=5000)
 
 
 @atexit.register
