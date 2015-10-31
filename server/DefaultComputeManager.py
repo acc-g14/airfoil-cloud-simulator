@@ -88,7 +88,7 @@ class DefaultComputeManager(ComputeManager):
         hash_key = generate_hash(task.model_params, task.compute_params)
         if self._storage.has_result(task.model_params, task.compute_params):
             task.finished = True
-            task.result = json.loads(self._storage.get_result(task.model_params, task.compute_params))
+            task.result = json.loads(self._storage.get_result(task.model_params, task.compute_params)[0])
         else:
             string = json.dumps(self._config.swift_config)
             while len(string) % 16 != 0:
