@@ -63,7 +63,7 @@ class DatabaseStorage(Storage):
                 runtime = endtime - precheck_result[0]
                 print "RUNTIME: " + str(runtime)
                 print "HASHKEY: " + str(hash_key)
-                DBUtil.execute_command("UPDATE Results SET runtime = ? WHERE name = ?", (float(runtime), str(hash_key)))
+                DBUtil.execute_command("UPDATE Results SET runtime = ? WHERE name = ?", (str(runtime), str(hash_key)))
             print "result already in database"
             return True
         if endtime is not None and started is not None:
