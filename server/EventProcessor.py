@@ -53,7 +53,6 @@ class EventProcessor:
         print "task started"
         DBUtil.execute_command(self._config.db_name, "UPDATE Results SET started = ? WHERE name = ?", (started, hash_key))
 
-
     def task_succeeded(self, event):
         """
         Event handler when task succeeds
@@ -61,8 +60,9 @@ class EventProcessor:
         """
         self._state.event(event)
         hash_key = event['uuid']
+        endtime = event['timestamp']
         asyncresult = AsyncResult(hash_key)
-        self._storage.save_result_hash(hash_key, asyncresult.get())
+        self._storage.save_result_hash(hash_key, asyncresult.get(), None, endtime)
         print "Task succeeded:" + hash_key
 
     def _delete_worker_by_hostname(self, hostname):

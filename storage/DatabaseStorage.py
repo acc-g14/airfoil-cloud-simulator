@@ -53,16 +53,22 @@ class DatabaseStorage(Storage):
         print "started: " + str(result[2])
         return result
 
-    def save_result_hash(self, hash_key, result, started=None, runtime=None):
+    def save_result_hash(self, hash_key, result, started=None, endtime=None):
         precheck_result = DBUtil.execute_command(self._db_name,
-                                                 "SELECT * FROM Results WHERE name = (?)", (hash_key,), "ONE")
+                                                 "SELECT started FROM Results WHERE name = (?)", (hash_key,), "ONE")
         if precheck_result is not None:
             if started is not None:
                 DBUtil.execute_command("UPDATE Results SET started = ? WHERE name = ?", (started,hash_key))
-            if runtime is not None:
+            if endtime is not None:
+                runtime = endtime - precheck_result[0]
+                print "RUNTIME: " + runtime
                 DBUtil.execute_command("UPDATE Results SET runtime = ? WHERE name = ?", (runtime, hash_key))
             print "result already in database"
             return True
+        if endtime is not None and started is not None:
+            runtime = endtime - started
+        else:
+            runtime = None
         DBUtil.execute_command(self._db_name, "INSERT INTO Results(name, value, started, runtime) VALUES (?,?,?,?)",
                                (hash_key, result, started, runtime))
         return True
