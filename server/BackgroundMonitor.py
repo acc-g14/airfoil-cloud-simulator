@@ -37,6 +37,7 @@ class BackgroundMonitor():
                 num_additional_workers += 1
                 eta = current_queue_length * avg_task_time / (2*(num_current_workers + num_additional_workers))
             num_additional_workers -= 1
+            num_additional_workers = max(0, num_additional_workers)
             print "Addtional workers: " + str(num_additional_workers)
             self._worker_manager.set_workers_available(num_additional_workers + num_current_workers)
             #TODO
