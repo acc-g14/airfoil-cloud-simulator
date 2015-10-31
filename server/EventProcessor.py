@@ -10,10 +10,14 @@ class EventProcessor:
     """
 
     def __init__(self, app, config):
-        self._state = app.events.State()
-        self._config = config
-        self._storage = DatabaseStorage(config.db_name)
-        self._init_event_receiver(app)
+        try:
+            self._state = app.events.State()
+            self._config = config
+            self._storage = DatabaseStorage(config.db_name)
+            self._init_event_receiver(app)
+        except KeyboardInterrupt:
+            # return gracefully.
+            pass
 
     def worker_online(self, event):
         """
