@@ -70,8 +70,9 @@ class DefaultWorkerManager(WorkerManager):
             print "worker is not-existent"
             
     def delete_inactive_workers(self):
-        results = DBUtil.execute_command(self._db_name, "SELECT id FROM Workers WHERE active <  ?", (time.time() - 60.0,), "ALL")
+        results = DBUtil.execute_command(self._db_name, "SELECT id FROM Workers WHERE initialized = 'true' AND active <  ?", (time.time() - 60.0,), "ALL")
         for result in results:
+            print result
             self._delete_worker(result[0])
 
     def delete_terminated_workers(self):

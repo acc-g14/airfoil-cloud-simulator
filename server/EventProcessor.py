@@ -41,6 +41,7 @@ class EventProcessor:
         """
         hostname = event['hostname']
         if "active" in event:
+            print "active found: " + str(event['active'])
             self._update_worker(hostname, event['active'])
         else:
             self._update_worker(hostname)
@@ -108,6 +109,6 @@ class EventProcessor:
         name = hostname.split("@")[1]
         heartbeat = time.time()
         if active > 0:
-            DBUtil.execute_command(self._config.db_name, "UPDATE Workers SET heartbeat = ?, last_active = ? WHERE name = ?", (heartbeat, heartbeat, name))
+            DBUtil.execute_command(self._config.db_name, "UPDATE Workers SET heartbeat = ?, active = ? WHERE name = ?", (heartbeat, heartbeat, name))
         else:
             DBUtil.execute_command(self._config.db_name, "UPDATE Workers SET heartbeat = ? WHERE name = ?", (heartbeat, name))
