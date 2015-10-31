@@ -72,7 +72,7 @@ if __name__ == '__main__':
     b = Process(target=BackgroundMonitor)
     p.start()
     b.start()
-    app.run(host='0.0.0.0', debug=True, port=5000)
+    app.run(host='0.0.0.0', debug=False, port=5000)
 
 
 @atexit.register
