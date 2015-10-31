@@ -58,12 +58,12 @@ class DatabaseStorage(Storage):
                                                  "SELECT started FROM Results WHERE name = (?)", (hash_key,), "ONE")
         if precheck_result is not None:
             if started is not None:
-                DBUtil.execute_command("UPDATE Results SET started = ? WHERE name = ?", (started, hash_key))
+                DBUtil.execute_command(self._db_name, "UPDATE Results SET started = ? WHERE name = ?", (started, hash_key))
             if endtime is not None:
                 runtime = endtime - precheck_result[0]
                 print "RUNTIME: " + str(runtime)
                 print "HASHKEY: " + str(hash_key)
-                DBUtil.execute_command("UPDATE Results SET runtime = ? WHERE name = ?", (str(runtime), str(hash_key)))
+                DBUtil.execute_command(self._db_name, "UPDATE Results SET runtime = ? WHERE name = ?", (str(runtime), str(hash_key)))
             print "result already in database"
             return True
         if endtime is not None and started is not None:
