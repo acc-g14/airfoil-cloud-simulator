@@ -46,12 +46,6 @@ class EventProcessor:
         else:
             self._update_worker(hostname)
 
-
-        # check for offline workers and delete them from the database
-        for key, worker in self._state.workers.iteritems():
-            if not worker.alive:
-                self._delete_worker_by_hostname(key)
-
     def worker_offline(self, event):
         """
         Event handler when worker goes offline.
