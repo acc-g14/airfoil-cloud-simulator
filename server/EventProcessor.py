@@ -3,7 +3,7 @@ from storage.KeyValueCache import KeyValueCache
 from utils import DBUtil
 
 
-class BackgroundMonitor:
+class EventProcessor:
     """
     Class which should be executed as background task. Updates task results and keeps track of workers going on-
     or offline.

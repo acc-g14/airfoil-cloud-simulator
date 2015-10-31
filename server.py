@@ -3,7 +3,7 @@ from multiprocessing import Process
 from celery import Celery
 from flask import Flask, jsonify, request, send_file
 from model.UserParameters import UserParameters
-from server.BackgroundMonitor import BackgroundMonitor
+from server.EventProcessor import EventProcessor
 from server.DefaultComputeManager import DefaultComputeManager
 from server.DefaultWorkerManager import DefaultWorkerManager
 from storage.KeyValueCache import KeyValueCache
@@ -59,17 +59,24 @@ def create_worker(num_workers):
 def get_status(job_id):
     return jsonify(comp_manager.get_status(job_id))
 
-
+p = None
+b = None
 @app.route("/job/<job_id>/result")
 def get_result(job_id):
     return jsonify(comp_manager.get_result(job_id))
 if __name__ == '__main__':
     c = Celery(broker=config.broker, backend=config.backend)
-    p = Process(target=BackgroundMonitor, args=(c, config))
+    p = Process(target=EventProcessor, args=(c, config))
+    #b = Process(target=BackgroundMonitor, args=(,))
+
     p.start()
+    #b.start()
+
     app.run(host='0.0.0.0', debug=False, port=5000)
 
 
 @atexit.register
 def cleanup():
+    p.terminate()
+    b.terminate()
     discard_all()
