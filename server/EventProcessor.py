@@ -1,4 +1,5 @@
 from celery.result import AsyncResult
+import time
 from storage.DatabaseStorage import DatabaseStorage
 from utils import DBUtil
 
@@ -43,6 +44,8 @@ class EventProcessor:
         for key, worker in self._state.workers.iteritems():
             if not worker.alive:
                 self._delete_worker_by_hostname(key)
+            else:
+                self._update_worker(key)
 
     def worker_offline(self, event):
         """
@@ -98,3 +101,8 @@ class EventProcessor:
                 'worker-offline': self.worker_offline
             })
             recv.capture(limit=None, timeout=None, wakeup=True)
+
+    def _update_worker(self, hostname):
+        name = hostname.split("@")[1]
+        heartbeat = time.time()
+        DBUtil.execute_command(self._config.db_name, "UPDATE Workers SET heartbeat = ? WHERE name = ?", (heartbeat, name))

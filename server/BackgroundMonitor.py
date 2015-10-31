@@ -26,6 +26,7 @@ class BackgroundMonitor():
         print str(avg_task_time)
 
     def _get_average_worker_startup_time(self):
+        DBUtil.execute_command("DELETE FROM Workers WHERE initialized = 'true' AND heartbeat < ?", (time.time() - 60.0,))
         results = DBUtil.execute_command(self._config.db_name,
                                          "SELECT starttime FROM Workers WHERE starttime IS NOT NULL", None, "ALL")
         if len(results) > 0:

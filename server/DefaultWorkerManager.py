@@ -14,7 +14,7 @@ class DefaultWorkerManager(WorkerManager):
         self._db_name = db_name
         DBUtil.execute_command(db_name,
                                "CREATE TABLE IF NOT EXISTS Workers " +
-                               "(id text PRIMARY KEY, name text, initialized boolean, started DATETIME, starttime float)")
+                               "(id text PRIMARY KEY, name text, initialized boolean, started DATETIME, starttime float, heartbeat DATETIME)")
         self._config = config
         self._nc = Client('2', **config.nova_config)
 
