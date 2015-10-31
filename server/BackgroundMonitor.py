@@ -20,15 +20,17 @@ class BackgroundMonitor():
         num_current_workers = self._get_num_current_workers()
         current_queue_length = self._get_current_queue_length()
         avg_task_time = self._get_avg_task_time()
-        print avg_worker_time
-        print current_queue_length
-        print num_current_workers
-        print avg_task_time
+        print str(avg_worker_time)
+        print str(current_queue_length)
+        print str(num_current_workers)
+        print str(avg_task_time)
 
     def _get_average_worker_startup_time(self):
         results = DBUtil.execute_command(self._config.db_name,
                                          "SELECT starttime FROM Workers WHERE starttime IS NOT NULL", None, "ALL")
-        result_sum = reduce(lambda x, result: x + result[0], results)
+        result_sum = 0.0
+        for result in results:
+            result_sum += result[0]
         return result_sum / float(len(results))
 
     def _get_current_queue_length(self):
@@ -43,5 +45,7 @@ class BackgroundMonitor():
     def _get_avg_task_time(self):
         results = DBUtil.execute_command(self._config.db_name, "SELECT runtime FROM Results WHERE runtime IS NOT NULL",
                                          None, "ALL")
-        result_sum = reduce(lambda x, result: x + result[0], results)
+        result_sum = 0.0
+        for result in results:
+            result_sum += result[0]
         return result_sum / float(len(results))
