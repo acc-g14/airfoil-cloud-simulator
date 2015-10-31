@@ -1,4 +1,5 @@
 from novaclient.exceptions import NotFound
+import time
 from WorkerManager import WorkerManager
 from novaclient.client import Client
 from utils import server_ip, DBUtil
@@ -13,7 +14,7 @@ class DefaultWorkerManager(WorkerManager):
         self._db_name = db_name
         DBUtil.execute_command(db_name,
                                "CREATE TABLE IF NOT EXISTS Workers " +
-                               "(id text PRIMARY KEY, name text, initialized boolean)")
+                               "(id text PRIMARY KEY, name text, initialized boolean, started DATETIME, starttime float)")
         self._config = config
         self._nc = Client('2', **config.nova_config)
 
@@ -52,8 +53,8 @@ class DefaultWorkerManager(WorkerManager):
             name = "g14worker" + str(self.get_number_of_workers())
             server = self._nc.servers.create(name, image, flavor, userdata=cloud_init)
             DBUtil.execute_command(self._db_name,
-                                   "INSERT INTO Workers(id, name, initialized) VALUES (?,?, 'false')",
-                                   (server.id, name))
+                                   "INSERT INTO Workers(id, name, initialized, started) VALUES (?,?, 'false')",
+                                   (server.id, name, time.time()))
 
     def _shutdown_workers(self, num_workers):
         ids = DBUtil.execute_command(self._db_name, "SELECT id FROM Workers", None, num_workers)

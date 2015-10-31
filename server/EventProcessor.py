@@ -22,7 +22,12 @@ class EventProcessor:
         """
         self._state.event(event)
         name = event['hostname'].split("@")[1]
-        DBUtil.execute_command(self._config.db_name, "UPDATE Workers SET initialized = 'true' WHERE name = ? ", (name,))
+        init_time = event['timestamp']
+        result = DBUtil.execute_command(self._config.db_name, "SELECT started FROM Workers WHERE name = ?", (name,), "ONE")
+        if result is not None:
+            starttime = init_time - result[0]
+            print "STARTTIME: " + starttime
+            DBUtil.execute_command(self._config.db_name, "UPDATE Workers SET initialized = 'true', starttime = ?  WHERE name = ? ", (starttime, name))
 
     def worker_heartbeat(self, event):
         """
