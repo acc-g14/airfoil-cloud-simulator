@@ -32,7 +32,7 @@ class EventProcessor:
         if result is not None:
             starttime = init_time - result[0]
             print "STARTTIME: " + str(starttime)
-            DBUtil.execute_command(self._config.db_name, "UPDATE Workers SET initialized = 'true', starttime = ?, heartbeat = ?  WHERE name = ? ", (starttime, time.time(), name))
+            DBUtil.execute_command(self._config.db_name, "UPDATE Workers SET initialized = 'true', starttime = ?, heartbeat = ?, active = ?  WHERE name = ? ", (starttime, time.time(), time.time(), name))
 
     def worker_heartbeat(self, event):
         """
@@ -41,7 +41,6 @@ class EventProcessor:
         """
         hostname = event['hostname']
         if "active" in event:
-            print "active found"
             self._update_worker(hostname, event['active'])
         else:
             self._update_worker(hostname)
