@@ -73,9 +73,10 @@ class DefaultWorkerManager(WorkerManager):
     def delete_inactive_workers(self):
         results = DBUtil.execute_command(self._db_name, "SELECT id FROM Workers WHERE initialized = 'true' AND active <  ?", (time.time() - 60.0,), "ALL")
         for result in results:
-            print result
             self._delete_worker(result[0])
 
     def delete_terminated_workers(self):
+        print DBUtil.execute_command(self._config.db_name, "SELECT * FROM Workers", None, "ALL")
         DBUtil.execute_command(self._config.db_name,
                                "DELETE FROM Workers WHERE initialized = 'true' AND heartbeat < ?", (time.time() - 60.0,))
+        print DBUtil.execute_command(self._config.db_name, "SELECT * FROM Workers", None, "ALL")
