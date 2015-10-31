@@ -40,8 +40,13 @@ class EventProcessor:
         :param event:
         """
         hostname = event['hostname']
-        active = event['active']
-        self._update_worker(hostname, active)
+        if "active" in event:
+            print "active found"
+            self._update_worker(hostname, event['active'])
+        else:
+            self._update_worker(hostname)
+
+
         # check for offline workers and delete them from the database
         for key, worker in self._state.workers.iteritems():
             if not worker.alive:
@@ -100,7 +105,7 @@ class EventProcessor:
             })
             recv.capture(limit=None, timeout=None, wakeup=True)
 
-    def _update_worker(self, hostname, active):
+    def _update_worker(self, hostname, active=0):
         name = hostname.split("@")[1]
         heartbeat = time.time()
         if active > 0:
