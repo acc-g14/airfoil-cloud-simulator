@@ -63,7 +63,7 @@ class DatabaseStorage(Storage):
                 if precheck_result[0] is not None:
                     runtime = endtime - precheck_result[0]
                 else:
-                    runtime = None
+                    runtime = -1
                 print "RUNTIME: " + str(runtime)
                 print "HASHKEY: " + str(hash_key)
                 DBUtil.execute_command(self._db_name, "UPDATE Results SET runtime = ?, value = ? WHERE name = ?", (str(runtime), result, str(hash_key)))

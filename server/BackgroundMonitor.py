@@ -68,7 +68,7 @@ class BackgroundMonitor():
         return self._worker_manager.get_number_of_workers()
 
     def _get_avg_task_time(self):
-        results = DBUtil.execute_command(self._config.db_name, "SELECT runtime FROM Results WHERE runtime IS NOT NULL",
+        results = DBUtil.execute_command(self._config.db_name, "SELECT runtime FROM Results WHERE runtime IS NOT NULL AND runtime != -1",
                                          None, "ALL")
         if len(results) > 0:
             result_sum = 0.0
