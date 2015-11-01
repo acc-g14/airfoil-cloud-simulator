@@ -91,9 +91,17 @@ $(function() {
             )
             $(".job_list_div").click( function() {
                 //TODO: Update for onmousedown to trigger a function that collects the relevant data for selected job-ID and
-                // displays the data in the bottom table.
+
                 }
-            );
-            );
+                );
+            setInterval(function() {
+                $.get("jobs").success(function (data) {
+                    $("#existing_jobs_div").html($(data).find("#existing_jobs_div").html())
+                })
+            }, 1000)
+
+        });
+
+$(function() {
 
         });
