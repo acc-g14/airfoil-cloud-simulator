@@ -1,6 +1,3 @@
-/**
- * Created by Mange on 01/11/15.
- */
 var preText = {};
 preText["n0"] = "NACA1";
 preText["n1"] = "NACA2";
@@ -64,11 +61,11 @@ $(document).ready(function () {
 });
 
 //TODO: Adjust for current implementation
-function updateJobResult() {
+function updateJobResult(jobId) {
     var jobResult = $.get("job/" + jobId + "/result");
 
     jobResult.done(function (data) {
-        //$("#jsonDiv").html(jobId + " " + JSON.stringify(data, null, 4));
+        $("#results-" + jobId).html(jobId + " " + JSON.stringify(data, null, 4));
         console.log(data)
         setTimeout(updateJobResult, 1000);
     });
@@ -127,9 +124,14 @@ $(function () {
                         <div role="tabpanel" class="tab-pane" id="results-'+obj+'">Results</div>\
                         <div role="tabpanel" class="tab-pane" id="graph-'+obj+'">Graph</div>\
                         </div></div></div></div>'
+                        setTimeout(updateJobResult(obj), 1000);
                     element.append(htmlElement);
                     listElements.push(data[index])
                 }
+
+                //TODO: Update results
+
+                //TODO: Update graph
             }
         })
     }, 1000)
