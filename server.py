@@ -1,22 +1,24 @@
-from Crypto.Cipher import AES
 import atexit
-import os
+from multiprocessing import Process
+from threading import Timer
+from celery import Celery
 from flask import Flask, jsonify, request, send_file
 from model.UserParameters import UserParameters
+from server.BackgroundMonitor import BackgroundMonitor
+from server.EventProcessor import EventProcessor
 from server.DefaultComputeManager import DefaultComputeManager
 from server.DefaultWorkerManager import DefaultWorkerManager
-from storage.KeyValueCache import KeyValueCache
+from storage.DatabaseStorage import DatabaseStorage
 from celery.task.control import discard_all
 from model.Config import Config
-
 
 app = Flask(__name__)
 
 
 config = Config()
-kv_storage = KeyValueCache(config.db_name)
-comp_manager = DefaultComputeManager(kv_storage, config)
+kv_storage = DatabaseStorage(config.db_name)
 worker_manager = DefaultWorkerManager(config, config.db_name)
+comp_manager = DefaultComputeManager(worker_manager,kv_storage, config)
 
 
 @app.route('/interface', methods=['GET'])
@@ -59,24 +61,22 @@ def create_worker(num_workers):
 def get_status(job_id):
     return jsonify(comp_manager.get_status(job_id))
 
-
-@app.route("/save_result/<hash_key>", methods=["POST"])
-def save_result(hash_key):
-    result = request.form['result']
-    comp_manager.save_result(hash_key, result)
-    return "asdsa"
-
-
+p = None
+b = None
 @app.route("/job/<job_id>/result")
 def get_result(job_id):
     return jsonify(comp_manager.get_result(job_id))
-
 if __name__ == '__main__':
-    worker_manager.load_workers()
-    app.run(host='0.0.0.0', debug=True, port=5000)
+    c = Celery(broker=config.broker, backend=config.backend)
+    p = Process(target=EventProcessor, args=(c, config))
+    b = Process(target=BackgroundMonitor)
+    p.start()
+    b.start()
+    app.run(host='0.0.0.0', debug=False, port=5000)
 
 
 @atexit.register
 def cleanup():
-    worker_manager.save_ids()
+    p.terminate()
+    b.terminate()
     discard_all()

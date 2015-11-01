@@ -1,10 +1,11 @@
+from multiprocessing import Process
 from ComputeManager import ComputeManager
 from model.ComputeParameters import ComputeParameters
 from model.Job import Job
 from storage.SwiftStorage import SwiftStorage
 from model.ModelParameters import ModelParameters
 from model.Task import Task
-from utils import server_ip
+from utils import server_ip, generate_hash
 import workertasks
 import uuid
 import numpy
@@ -16,12 +17,12 @@ class ComputationException(BaseException):
 
 
 class DefaultComputeManager(ComputeManager):
-    def __init__(self, storage, config):
+    def __init__(self, worker_manager, storage, config):
         super(DefaultComputeManager, self).__init__(storage)
+        self._worker_manager = worker_manager
         self._config = config
         self._jobs = {}
-        #TODO: load results from object store
-        swift = SwiftStorage(config.swift_config)
+        swift = SwiftStorage(config.swift_config, config.container)
         for objectName in swift.get_entries():
             objectData = swift.get_result_hash(objectName)
             storage.save_result_hash(objectName, objectData)
@@ -57,7 +58,7 @@ class DefaultComputeManager(ComputeManager):
             total_tasks = len(job.tasks)
             for task in job.tasks:
                 if self._storage.has_result(task.model_params, task.compute_params):
-                    result = self._storage.get_result(task.model_params, task.compute_params)
+                    result = json.loads(self._storage.get_result(task.model_params, task.compute_params)[0])
                     finished_tasks += 1
                     taskresults.append(result)
             return {"finished_tasks": finished_tasks,
@@ -75,20 +76,31 @@ class DefaultComputeManager(ComputeManager):
         tasks = self._convert_user_params_to_tasks(user_params, job_id)
         tasklist = []
         for task in tasks:
-            if self._storage.has_result(task.model_params, task.compute_params):
-                task.finished = True
-                task.result = self._storage.get_result(task.model_params, task.compute_params)
-            else:
-                string = json.dumps(self._config.swift_config)
-                while len(string) % 16 != 0:
-                    string += " "
-                config = self._config.crypt_obj.encrypt(string)
-                workertask = workertasks.simulate_airfoil.delay(task.model_params, task.compute_params, config)
-                task.workertask = workertask
-                task.id = workertask.id
+            # check
+            self._start_task(task)
             tasklist.append(task)
-        self._jobs[str(job_id)] = Job(job_id, tasklist, [])
+        job = Job(job_id, tasklist, [])
+        self._jobs[str(job_id)] = job
+        # TODO: we don't want workers to be started here anymore
+        #self._start_workers(job)
         return job_id
+
+    def _start_task(self, task):
+        hash_key = generate_hash(task.model_params, task.compute_params)
+        if self._storage.has_result(task.model_params, task.compute_params):
+            task.finished = True
+            task.result = json.loads(self._storage.get_result(task.model_params, task.compute_params)[0])
+        else:
+            string = json.dumps(self._config.swift_config)
+            while len(string) % 16 != 0:
+                string += " "
+            config = self._config.crypt_obj.encrypt(string)
+            workertask = workertasks.simulate_airfoil.apply_async((task.model_params, task.compute_params,
+                                                                   config, self._config.container),
+                                                                  task_id=hash_key)
+            self._storage.save_result(task.model_params, task.compute_params, None)
+            task.workertask = workertask
+            task.id = workertask.id
 
     @staticmethod
     def _convert_user_params_to_tasks(user_params, job):
@@ -99,14 +111,25 @@ class DefaultComputeManager(ComputeManager):
         :return: model.Task.Task[]
         """
         tasks = []
-        compute_parameters = ComputeParameters(user_params.num_samples, user_params.viscosity, user_params.speed, user_params.time, server_ip())
+        compute_parameters = ComputeParameters(user_params.num_samples, user_params.viscosity, user_params.speed,
+                                               user_params.time, server_ip())
         angles = numpy.arange(user_params.min_angle, user_params.max_angle, user_params.step)
         for angle in angles:
             model_parameters = ModelParameters(user_params.naca4, job, angle, user_params.num_nodes,
                                                user_params.refinement_level)
             task = Task(None, None, model_parameters, compute_parameters, None)
             tasks.append(task)
+        model_parameters = ModelParameters(user_params.naca4, job, user_params.max_angle, user_params.num_nodes,
+                                           user_params.refinement_level)
+        task = Task(None, None, model_parameters, compute_parameters, None)
+        tasks.append(task)
         return tasks
 
     def save_result(self, hash_key, result):
         self._storage.save_result_hash(hash_key, result)
+
+    def _start_workers(self, job):
+        num_not_finished = len([task for task in job.tasks if not task.finished])
+        num_workers = self._worker_manager.get_number_of_workers()
+        if num_not_finished > num_workers:
+            self._worker_manager.set_workers_available(num_not_finished - num_workers)

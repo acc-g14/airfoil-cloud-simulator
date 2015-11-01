@@ -64,6 +64,7 @@ class DBUtil:
     @classmethod
     def execute_command(cls, db_name, command, params=None, fetch=None):
         conn = sqlite3.connect(db_name)
+        conn.execute("PRAGMA busy_timeout = 30000")
         c = conn.cursor()
         if params is None:
             c.execute(command)
@@ -73,6 +74,8 @@ class DBUtil:
             result = c.fetchall()
         elif fetch == "ONE":
             result = c.fetchone()
+        elif isinstance(fetch, int):
+            result = c.fetchmany(fetch)
         else:
             result = None
         conn.commit()
