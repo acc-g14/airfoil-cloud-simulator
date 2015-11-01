@@ -66,7 +66,7 @@ function updateJobResult(jobId) {
 
     jobResult.done(function (data) {
         $("#results-" + jobId).html(jobId + " " + JSON.stringify(data, null, 4));
-        jobInfo = JSON.parse(data)
+        jobInfo = data
         //$("#results-" + jobId).html("Job ID: + " " + jobId + " Finished tasks: " + jobInfo["finished_tasks"] +
         // " Results: " + jobInfo = {results: {angle: angleVal; lift: liftVal; drag: dragVal}} + " "); // RESULTS IS A LIST
 
@@ -83,9 +83,9 @@ function updateJobResult(jobId) {
         results_table += "<tr><th>Angle</th><th>Lift</th><th>Drag</th></tr>";
 
 
-        for (i=0; i<jobInfo.result.length; i++) {
-            result = jobInfo.result[i];
-            results_table += "<tr><td>" + result[angle] + "</td><td>" + result[lift] + "</td><td>" + result[drag] + "</td></tr>";
+        for (i=0; i<jobInfo.results.length; i++) {
+            result = jobInfo.results[i];
+            results_table += "<tr><td>" + result.angle + "</td><td>" + result.lift + "</td><td>" + result.drag + "</td></tr>";
         }
         results_table += "</table>";
         results_div.html(results_table);
@@ -163,8 +163,32 @@ $(function () {
                         <div role="tabpanel" class="tab-pane active" id="status-'+obj+'">Status</div>\
                         <div role="tabpanel" class="tab-pane job_parameters" id="parameters-'+obj+'">Parameters</div>\
                         <div role="tabpanel" class="tab-pane" id="results-'+obj+'">Results</div>\
-                        <div role="tabpanel" class="tab-pane" id="graph-'+obj+'">Graph</div>\
+                        <div role="tabpanel" class="tab-pane" id="graph-'+obj+'"><div id="chart-'+obj+'" style="height:500px"></div></div>\
                         </div></div></div></div>'
+                        $('chart-' + obj).highcharts({
+                            chart: {
+                                type: 'bar'
+                            },
+                            title: {
+                                text: 'Fruit Consumption'
+                            },
+                            xAxis: {
+                                categories: ['Apples', 'Bananas', 'Oranges']
+                            },
+                            yAxis: {
+                                title: {
+                                    text: 'Fruit eaten'
+                                }
+                            },
+                            series: [{
+                                name: 'Jane',
+                                data: [1, 0, 4]
+                            }, {
+                                name: 'John',
+                                data: [5, 7, 3]
+                            }]
+                        });
+
                         updateJobResult(obj);
                     element.append(htmlElement);
                     listElements.push(data[index])
