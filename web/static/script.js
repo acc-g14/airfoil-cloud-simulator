@@ -95,8 +95,12 @@ $(function() {
                 }
                 );
             setInterval(function() {
-                $.get("jobs").success(function (data) {
-                    $("#existing_jobs_div").html($(data).find("#existing_jobs_div").html())
+                $.get("existing_jobs").success(function (data) {
+                    $("#existing_jobs_div").empty()
+                    for (item in data) {
+                        console.log(item)
+                        $("#existing_jobs_div").append("<div>" + item + "</div>")
+                    }
                 })
             }, 1000)
 

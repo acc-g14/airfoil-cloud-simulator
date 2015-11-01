@@ -25,15 +25,7 @@
     </div>
 
     <div id="existing_jobs_div">
-        {% for job in existing_jobs %}
-            <div class="job_list_div">
-                {{ job }}
-            </div>
-        {%  endfor %}
-        <!-- if no existing jobs, state this -->
-        {% if not existing_jobs %}
-            <br>No existing jobs.
-        {%  endif %}
+       <!-- updated dynamically by JS -->
     </div>
 
 

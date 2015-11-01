@@ -115,10 +115,13 @@ def service_status():
     return render_template('service_status.html')
 
 
-@app.route('/jobs', methods=['GET', 'POST'])
+@app.route('/existing_jobs', methods=['GET'])
+def existing_jobs():
+    return json.dumps(comp_manager.get_jobs())
+
+@app.route('/jobs', methods=['GET'])
 def jobs():
-    existing_jobs = comp_manager.get_jobs()
-    return render_template('jobs.html', existing_jobs=map(json.dumps, existing_jobs))
+    return render_template('jobs.html')
 
 
 if __name__ == '__main__':
