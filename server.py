@@ -12,6 +12,11 @@ from storage.DatabaseStorage import DatabaseStorage
 from celery.task.control import discard_all
 from model.Config import Config
 
+from flask import session, redirect, url_for, \
+     render_template, flash
+import json
+
+
 app = Flask(__name__)
 
 
@@ -66,6 +71,54 @@ b = None
 @app.route("/job/<job_id>/result")
 def get_result(job_id):
     return jsonify(comp_manager.get_result(job_id))
+
+# Login view - login options
+@app.route('/')
+def show_login():
+    return render_template('main_login.html', error=None)
+
+
+# Main view - the user dashboard
+@app.route('/dashboard')
+def show_dashboard():
+    return render_template('dashboard.html')
+
+
+# Logging in - fix to setup user DB and management
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        if request.form['username'] != config.username:
+            error = 'Username not valid'
+        elif request.form['password'] != config.password:
+            error = 'Password not valid'
+        else:
+            session['logged_in'] = True
+            flash('You are now logged in')
+            return redirect(url_for('jobs'))
+    return render_template('main_login.html', error=error)
+
+
+# Logging out - fix to adhere to updated user management
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    flash('You are now logged out')
+    return redirect(url_for('show_login'))
+
+
+@app.route('/service_status')
+def service_status():
+    return render_template('service_status.html')
+
+
+@app.route('/jobs', methods=['GET', 'POST'])
+def jobs():
+    existing_jobs = ["job1", "job2", "job3"]
+    return render_template('jobs.html', existing_jobs=map(json.dumps, existing_jobs))
+
+
 if __name__ == '__main__':
     c = Celery(broker=config.broker, backend=config.backend)
     p = Process(target=EventProcessor, args=(c, config))
