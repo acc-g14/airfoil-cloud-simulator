@@ -79,7 +79,7 @@ class DefaultComputeManager(ComputeManager):
             # check
             self._start_task(task)
             tasklist.append(task)
-        job = Job(job_id, tasklist, [])
+        job = Job(job_id, tasklist, [], user_params)
         self._jobs[str(job_id)] = job
         # TODO: we don't want workers to be started here anymore
         #self._start_workers(job)
@@ -135,7 +135,4 @@ class DefaultComputeManager(ComputeManager):
             self._worker_manager.set_workers_available(num_not_finished - num_workers)
 
     def get_jobs(self):
-        ret = []
-        for job in self._jobs.keys():
-            ret.append(job)
-        return ret
+        return self._jobs

@@ -1,3 +1,30 @@
 {% for job in existing_jobs %}
-    <div>{{job}}</div>
+    <div class="job_item list-group-item" id="job-{{job}}">
+        <div class="panel">
+            <div class="job_id panel-heading"><a>{{job}}</a></div>
+            <div class="job_item_info hide">
+        <div>
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active">
+                    <a href="#status" aria-controls="status" role="tab" data-toggle="tab">Status</a>
+                </li>
+                <li role="presentation">
+                    <a href="#parameters" aria-controls="parameters" role="tab" data-toggle="tab">Parameters</a>
+                </li>
+                <li role="presentation">
+                    <a href="#results" aria-controls="results" role="tab" data-toggle="tab">Results</a>
+                </li>
+                <li role="presentation">
+                    <a href="#graph" aria-controls="settings" role="tab" data-toggle="tab">Graph</a>
+                </li>
+            </ul>
+        </div>
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="status">Status</div>
+            <div role="tabpanel" class="tab-pane job_parameters" id="parameters">Parameters</div>
+            <div role="tabpanel" class="tab-pane" id="results">Results</div>
+            <div role="tabpanel" class="tab-pane" id="graph">Graph</div>
+          </div>
+        <div>
+    </div>
 {%  endfor %}

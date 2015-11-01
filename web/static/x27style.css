@@ -21,7 +21,7 @@ a               { text-decoration: none;}
 
 #new_job_div            {margin-top: 0.3em;}
 #sliding_new_job_div    {clear: both; margin-top: 0.3em; display: none;}
-#existing_jobs_div      {clear: both; margin-top: 0.3em;}
+.jobs_list      {clear: both; margin-top: 0.3em;}
 #job_info_div           {margin-top: 0.3em; min-height: 100px;}
 #new_job_btn        { text-align: right; padding: 0.3em; float: right}
 
@@ -53,11 +53,18 @@ a               { text-decoration: none;}
     color: #000000;
     background-color: #EAF2D3;
 }
-.job_list_div {
-    background-color: #bababa;
+
+.list-group-item .panel {
+    margin:0;
 }
-.job_list_div:hover {
-    background-color: #ffffff;
+.list-group-item .panel-heading {
+    padding: 3px;
+    text-align: center;
+}
+.list-group-item .panel-primary .panel-heading a {
+    color:white;
+    padding: 3px;
+    text-align: center;
 }
 
 
