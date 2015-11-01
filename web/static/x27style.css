@@ -16,14 +16,14 @@ a               { text-decoration: none;}
 .job_list_div   {vertical-align: middle;
                   background: #fafafa;}
 
-#body_side_menu     {float: left; width: 10em; height: 100%; border: 0px solid; border-color: green;}
-#body_work_space    {margin-left: 10em;margin-right: 10em; padding-left: 4em; border: 0px dotted; border-color: red;}
+#body_side_menu     {float: left;  height: 100%; border: 0px solid; border-color: green;}
+#body_work_space    { padding-left: 4em; border: 0px dotted; border-color: red;}
 
 #new_job_div            {margin-top: 0.3em;}
 #sliding_new_job_div    {clear: both; margin-top: 0.3em; display: none;}
 .jobs_list      {clear: both; margin-top: 0.3em;}
 #job_info_div           {margin-top: 0.3em; min-height: 100px;}
-#new_job_btn        { text-align: right; padding: 0.3em; float: right}
+#new_job_btn        { margin-bottom: 1em ;text-align: right; float: right}
 
 
 

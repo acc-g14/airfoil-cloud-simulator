@@ -1,14 +1,19 @@
 {% extends "layout.html" %}
 
 {% block body %}
-    <div id="body_side_menu">
-        <a href="{{ url_for('jobs') }}">Jobs</a><br>
-        <a href="{{ url_for('service_status') }}">Service status</a>
+<div class="row">
+    <div id="body_side_menu" class="col-xs-2">
+        <ul class="list-group">
+            <li class="list-group-item"><a href="{{ url_for('jobs') }}">Jobs</a></li>
+            <li class="list-group-item"><a href="{{ url_for('service_status') }}">Service status</a></li>
+        </ul>
+        <br>
+
     </div>
-    <div id="body_work_space">
+    <div id="body_work_space" class="col-xs-10">
         {% block workspace_block %}
         {% endblock %}
     </div>
-
+</div>
 
 {% endblock %}

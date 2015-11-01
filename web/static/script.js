@@ -116,10 +116,10 @@ $(function () {
                     htmlElement += '<div class="job_item_info panel-body" style="display: none">'
                     htmlElement +=
                         '<div><ul class="nav nav-tabs" role="tablist"> \
-                        <li role="presentation" class="active"><a href="#status" aria-controls="status" role="tab" data-toggle="tab">Status</a></li> \
+                        <li role="presentation" class="active"><a href="#status-'+obj+'" aria-controls="status" role="tab" data-toggle="tab">Status</a></li> \
                         <li role="presentation"><a href="#parameters-'+obj+'" aria-controls="parameters" role="tab" data-toggle="tab">Parameters</a></li>\
-                        <li role="presentation"><a href="#results'+obj+'" aria-controls="results" role="tab" data-toggle="tab">Results</a></li>\
-                        <li role="presentation"><a href="#graph'+obj+'" aria-controls="settings" role="tab" data-toggle="tab">Graph</a> </li>\
+                        <li role="presentation"><a href="#results-'+obj+'" aria-controls="results" role="tab" data-toggle="tab">Results</a></li>\
+                        <li role="presentation"><a href="#graph-'+obj+'" aria-controls="settings" role="tab" data-toggle="tab">Graph</a> </li>\
                         </ul></div>\
                         <div class="tab-content">\
                         <div role="tabpanel" class="tab-pane active" id="status-'+obj+'">Status</div>\
