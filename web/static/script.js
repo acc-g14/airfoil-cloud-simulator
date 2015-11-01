@@ -165,6 +165,7 @@ $(function () {
                         <div role="tabpanel" class="tab-pane" id="results-'+obj+'">Results</div>\
                         <div role="tabpanel" class="tab-pane" id="graph-'+obj+'"><div id="chart-'+obj+'" style="height:500px"></div></div>\
                         </div></div></div></div>'
+                        element.append(htmlElement);
                         $('#chart-' + obj).highcharts({
                             chart: {
                                 type: 'bar'
@@ -190,7 +191,6 @@ $(function () {
                         });
 
                         updateJobResult(obj);
-                    element.append(htmlElement);
                     listElements.push(data[index])
                 }
 
