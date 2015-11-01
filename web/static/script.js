@@ -52,7 +52,7 @@ $(document).ready(function () {
             jobId = data.job_id;
             //$("#content").append("<pre id='jsonDiv'></pre>");
             //TODO: Update correct elements
-            updateJobResult();
+            //updateJobResult();
         });
 
         return false;
@@ -67,7 +67,9 @@ function updateJobResult(jobId) {
     jobResult.done(function (data) {
         $("#results-" + jobId).html(jobId + " " + JSON.stringify(data, null, 4));
         console.log(data)
-        setTimeout(updateJobResult, 1000);
+        setTimeout(function() {
+            updateJobResult(jobId)
+        }, 1000);
     });
 }
 
@@ -124,7 +126,9 @@ $(function () {
                         <div role="tabpanel" class="tab-pane" id="results-'+obj+'">Results</div>\
                         <div role="tabpanel" class="tab-pane" id="graph-'+obj+'">Graph</div>\
                         </div></div></div></div>'
-                        setTimeout(updateJobResult(obj), 1000);
+                        setTimeout(function() {
+                            updateJobResult(obj)
+                        }, 1000);
                     element.append(htmlElement);
                     listElements.push(data[index])
                 }
