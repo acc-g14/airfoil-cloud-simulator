@@ -16,7 +16,6 @@ from flask import session, redirect, url_for, \
      render_template, flash
 import json
 
-
 app = Flask(__name__, template_folder="web/templates", static_folder="web/static")
 
 
@@ -141,7 +140,7 @@ if __name__ == '__main__':
     b = Process(target=BackgroundMonitor)
     p.start()
     b.start()
-    app.run(host='0.0.0.0', debug=False, port=5000)
+    app.run(host='0.0.0.0', debug=config.debug, port=5000)
 
 
 @atexit.register
