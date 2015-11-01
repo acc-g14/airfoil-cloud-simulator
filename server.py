@@ -17,7 +17,7 @@ from flask import session, redirect, url_for, \
 import json
 
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="web/templates", static_folder="web/static")
 
 
 config = Config()
