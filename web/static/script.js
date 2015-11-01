@@ -165,7 +165,7 @@ $(function () {
                         <div role="tabpanel" class="tab-pane" id="results-'+obj+'">Results</div>\
                         <div role="tabpanel" class="tab-pane" id="graph-'+obj+'"><div id="chart-'+obj+'" style="height:500px"></div></div>\
                         </div></div></div></div>'
-                        $('chart-' + obj).highcharts({
+                        $('#chart-' + obj).highcharts({
                             chart: {
                                 type: 'bar'
                             },
