@@ -17,7 +17,7 @@ a               { text-decoration: none;}
                   background: #fafafa;}
 
 #body_side_menu     {float: left;  height: 100%; border: 0px solid; border-color: green;}
-#body_work_space    { padding-left: 4em; border: 0px dotted; border-color: red;}
+#body_work_space    { border: 0px dotted; border-color: red;}
 
 #new_job_div            {margin-top: 0.3em;}
 #sliding_new_job_div    {clear: both; margin-top: 0.3em; display: none;}

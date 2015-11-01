@@ -2,7 +2,7 @@
 
 {% block body %}
 <div class="row">
-    <div id="body_side_menu" class="col-xs-2">
+    <div id="body_side_menu" class="col-xs-3">
         <ul class="list-group">
             <li class="list-group-item"><a href="{{ url_for('jobs') }}">Jobs</a></li>
             <li class="list-group-item"><a href="{{ url_for('service_status') }}">Service status</a></li>
@@ -10,7 +10,7 @@
         <br>
 
     </div>
-    <div id="body_work_space" class="col-xs-10">
+    <div id="body_work_space" class="col-xs-9">
         {% block workspace_block %}
         {% endblock %}
     </div>
