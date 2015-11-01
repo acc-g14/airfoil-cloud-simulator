@@ -21,6 +21,8 @@ app = Flask(__name__, template_folder="web/templates", static_folder="web/static
 
 
 config = Config()
+SECRET_KEY = config.secret_key
+app.config.from_object(__name__)
 kv_storage = DatabaseStorage(config.db_name)
 worker_manager = DefaultWorkerManager(config, config.db_name)
 comp_manager = DefaultComputeManager(worker_manager,kv_storage, config)
