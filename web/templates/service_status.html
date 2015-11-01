@@ -1,5 +1,18 @@
 {% extends "dashboard.html" %}
 
 {% block workspace_block %}
-    <h3>This is the designated area for displaying the status of the provided services.</h3>
+    <table id="service_status_table">
+        <tr>
+            <td>Service Available: </td>
+            <td>True</td>
+        </tr>
+        <tr class="alt">
+            <td>Workers active: </td>
+            <td>?</td>
+        </tr>
+        <tr>
+            <td>Running jobs: </td>
+            <td>?</td>
+        </tr>
+    </table>
 {% endblock %}
