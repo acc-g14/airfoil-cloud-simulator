@@ -12,7 +12,7 @@ preText["num_samples"] = "Simulation samples";
 preText["viscosity"] = "Simulation viscosity";
 preText["speed"] = "Simulation speed";
 preText["time"] = "Simulation time";
-
+var chartMap = {}
 var jobId = "";
 function clearArea(id, message) {
     if ($(id).val() == message) {
@@ -166,16 +166,17 @@ $(function () {
                         <div role="tabpanel" class="tab-pane" id="graph-'+obj+'"><div id="chart-'+obj+'" style="height:500px"></div></div>\
                         </div></div></div></div>'
                         element.append(htmlElement);
-                        $('#chart-' + obj).highcharts({
+                        var chart = new Highcharts.Chart({
                             chart: {
-                                type: 'bar'
+                                renderTo: 'chart-' + obj,
+                                type: 'line'
                             },
                             title: {
-                                text: 'Fruit Consumption'
+                                text: 'Job: ' + obj
                             },
-                            xAxis: {
-                                categories: ['Apples', 'Bananas', 'Oranges']
-                            },
+                            //xAxis: {
+                            //    categories: ['Apples', 'Bananas', 'Oranges']
+                            //},
                             yAxis: {
                                 title: {
                                     text: 'Fruit eaten'
@@ -189,14 +190,12 @@ $(function () {
                                 data: [5, 7, 3]
                             }]
                         });
-
+                        chartMap[obj] = chart
                         updateJobResult(obj);
                     listElements.push(data[index])
                 }
 
-                //TODO: Update results
-
-                //TODO: Update graph
+                //TODO: update chart
             }
         })
     }, 1000)
