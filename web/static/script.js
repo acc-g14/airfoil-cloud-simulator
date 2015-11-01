@@ -66,6 +66,45 @@ function updateJobResult(jobId) {
 
     jobResult.done(function (data) {
         $("#results-" + jobId).html(jobId + " " + JSON.stringify(data, null, 4));
+        jobInfo = JSON.parse(data)
+        //$("#results-" + jobId).html("Job ID: + " " + jobId + " Finished tasks: " + jobInfo["finished_tasks"] +
+        // " Results: " + jobInfo = {results: {angle: angleVal; lift: liftVal; drag: dragVal}} + " "); // RESULTS IS A LIST
+
+        //$(#results-" + jobId).html
+
+        //Updating the results for current job results
+        var results_div = $("#results-" + jobId);
+
+        //var tableClass = ???;
+        //var trClass = ???;
+        //var thClass = ???;
+        //var tdClass = ???; //Modify following code to include specific styling.
+        var results_table = "<table class='table'>";
+        results_table += "<tr><th>Angle</th><th>Lift</th><th>Drag</th></tr>";
+
+
+        for (i=0; i<jobInfo.result.length; i++) {
+            result = jobInfo.result[i];
+            results_table += "<tr><td>" + result[angle] + "</td><td>" + result[lift] + "</td><td>" + result[drag] + "</td></tr>";
+        }
+        results_table += "</table>";
+        results_div.html(results_table);
+
+        //{finished_tasks: finishedTasksVal; total_tasks: totalTasksVal}
+        //Updating the status for current job
+        var status_div = $("#status-" + jobId);
+
+        var status_table = "<table class='table'>";
+        var total_tasks = jobInfo["total_tasks"];
+        var finished_tasks = jobInfo["finished_tasks"];
+        status_table += "<tr><th>Total tasks</th><th>Finished tasks</th></tr>";
+        status_table += "<tr><td>" + total_tasks + "</td><td>" + finished_tasks + "</td></tr>";
+        status_table += "</table>";
+
+        status_div.html(status_table);
+
+
+
         console.log(data)
         setTimeout(function() {
             updateJobResult(jobId)
@@ -126,9 +165,7 @@ $(function () {
                         <div role="tabpanel" class="tab-pane" id="results-'+obj+'">Results</div>\
                         <div role="tabpanel" class="tab-pane" id="graph-'+obj+'">Graph</div>\
                         </div></div></div></div>'
-                        setTimeout(function() {
-                            updateJobResult(obj)
-                        }, 1000);
+                        updateJobResult(obj);
                     element.append(htmlElement);
                     listElements.push(data[index])
                 }
