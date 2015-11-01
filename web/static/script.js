@@ -88,16 +88,12 @@ $(function() {
                         $("#sliding_new_job_div").slideToggle("slow")
                         //alert('button clicked mmf');
                     }
+            )
+            $(".job_list_div").click( function() {
+                //TODO: Update for onmousedown to trigger a function that collects the relevant data for selected job-ID and
+                // displays the data in the bottom table.
+                }
             );
-            $(".job_list_div").mouseover( function() {
-                $(this).css("background-color", "#ffffff");
-                    }
-            );
-            $(".job_list_div").mouseout( function() {
-                $(this).css("background-color", "#fafafa");
-                    }
             );
 
-            //TODO: Update for onmousedown to trigger a function that collects the relevant data for selected job-ID and
-            // displays the data in the bottom table.
         });

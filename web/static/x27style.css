@@ -23,7 +23,7 @@ a               { text-decoration: none;}
 #sliding_new_job_div    {clear: both; margin-top: 0.3em; display: none;}
 #existing_jobs_div      {clear: both; margin-top: 0.3em;}
 #job_info_div           {margin-top: 0.3em; min-height: 100px;}
-#new_job_btn        { font-size: 1.5em; text-align: right; padding: 0.3em; float: right}
+#new_job_btn        { text-align: right; padding: 0.3em; float: right}
 
 
 
@@ -52,6 +52,12 @@ a               { text-decoration: none;}
 #service_status_table tr.alt td, #job_info_table tr.alt_job_info_td td {
     color: #000000;
     background-color: #EAF2D3;
+}
+.job_list_div {
+    background-color: #bababa;
+}
+.job_list_div:hover {
+    background-color: #ffffff;
 }
 
 

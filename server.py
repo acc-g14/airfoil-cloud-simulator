@@ -117,7 +117,7 @@ def service_status():
 
 @app.route('/jobs', methods=['GET', 'POST'])
 def jobs():
-    existing_jobs = ["job1", "job2", "job3"]
+    existing_jobs = comp_manager.get_jobs()
     return render_template('jobs.html', existing_jobs=map(json.dumps, existing_jobs))
 
 

@@ -133,3 +133,9 @@ class DefaultComputeManager(ComputeManager):
         num_workers = self._worker_manager.get_number_of_workers()
         if num_not_finished > num_workers:
             self._worker_manager.set_workers_available(num_not_finished - num_workers)
+
+    def get_jobs(self):
+        ret = []
+        for job in self._jobs.keys():
+            ret.append(job)
+        return ret
