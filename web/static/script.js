@@ -117,9 +117,10 @@ function updateJobResult(jobId) {
 
         c = chartMap[jobId]
         console.log(c)
-        c.xAxis.setExtremes(min, max, false);
-        c.series[0].setData(liftData, false);
-        c.series[1].setData(dragData, true);
+        c[0].xAxis[0].setExtremes(min, max, false);
+        c[0].series[0].setData(liftData, true);
+        c[1].xAxis[0].setExtremes(min, max, false);
+        c[1].series[0].setData(dragData, true);
         console.log(data)
         setTimeout(function() {
             updateJobResult(jobId)
@@ -178,12 +179,13 @@ $(function () {
                         <div role="tabpanel" class="tab-pane active" id="status-'+obj+'">Status</div>\
                         <div role="tabpanel" class="tab-pane job_parameters" id="parameters-'+obj+'">Parameters</div>\
                         <div role="tabpanel" class="tab-pane" id="results-'+obj+'">Results</div>\
-                        <div role="tabpanel" class="tab-pane" id="graph-'+obj+'"><div id="chart-'+obj+'" style="height:500px"></div></div>\
+                        <div role="tabpanel" class="tab-pane" id="graph-'+obj+'"><div id="lift_chart-'+obj+'" style="height:500px"></div></div>\
+                        <div role="tabpanel" class="tab-pane" id="graph-'+obj+'"><div id="drag_chart-'+obj+'" style="height:500px"></div></div>\
                         </div></div></div></div>'
                         element.append(htmlElement);
-                        var chart = new Highcharts.Chart({
+                        var lift_chart = new Highcharts.Chart({
                             chart: {
-                                renderTo: 'chart-' + obj,
+                                renderTo: 'lift_chart-' + obj,
                                 type: 'line'
                             },
                             title: {
@@ -202,12 +204,34 @@ $(function () {
                             series: [{
                                 name: 'Lift force (avg)',
                                 data: []
-                            }, {
+                            }]
+                        });
+                        var drag_chart = new Highcharts.Chart({
+                            chart: {
+                                renderTo: 'drag_chart-' + obj,
+                                type: 'line'
+                            },
+                            title: {
+                                text: 'Job: ' + obj
+                            },
+                            xAxis: {
+                                title: {
+                                    text: 'Angle'
+                                }
+                            },
+                            yAxis: {
+                                title: {
+                                    text: ''
+                                }
+                            },
+                            series: [{
                                 name: 'Drag force (avg)',
                                 data: []
                             }]
                         });
-                        chartMap[obj] = chart
+
+
+                        chartMap[obj] = [lift_chart, drag_chart]
                         updateJobResult(obj);
                     listElements.push(data[index])
                 }
