@@ -165,7 +165,7 @@ $(function () {
     $("#jobs_list").delegate(".job_id", "click", function () {
         var el = $(this);
         el.parent().toggleClass("panel-primary")
-        var job_id = el.text();
+        var job_id = el.find("a").text();
         $.get("job/" + job_id + "/parameters").success(function (data) {
             console.log(el)
             var infoElement = el.parent().find(".job_parameters");
@@ -185,7 +185,7 @@ $(function () {
                 if (listElements.indexOf(obj) == -1) {
 
                     var htmlElement = '<div class="job_item list-group-item" id="job-' + obj + '">';
-                    htmlElement += '<div class="panel"><div class="job_id panel-heading"><a>' + obj + '</a><span id="progress-'+obj+'" class="label"></span></div>'
+                    htmlElement += '<div class="panel"><div class="job_id panel-heading"><a>' + obj + '</a><span id="progress-'+obj+'" class="label pull-right" style="margin-top:3px;margin-right:10px;"></span></div>'
                     htmlElement += '<div class="job_item_info panel-body" style="display: none">'
                     htmlElement +=
                         '<div><ul class="nav nav-tabs" role="tablist"> \
