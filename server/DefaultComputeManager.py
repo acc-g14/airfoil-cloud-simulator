@@ -33,8 +33,11 @@ class DefaultComputeManager(ComputeManager):
         if job is None:
             raise ComputationException("No valid key specified")
         for task in job.tasks:
-            task.workertask.revoke()
-        pass
+            try:
+                task.workertask.revoke()
+            except Exception:
+                pass
+        self._jobs.pop(job_id)
 
     def get_status(self, job_id):
             job = self._jobs.get(job_id)
