@@ -15,6 +15,7 @@ from model.Config import Config
 from flask import session, redirect, url_for, \
      render_template, flash
 import json
+from utils import DBUtil
 
 app = Flask(__name__, template_folder="web/templates", static_folder="web/static")
 
@@ -58,9 +59,11 @@ def delete_job(job_id):
     return jsonify("")
 
 
-@app.route("/worker/<int:num_workers>")
-def create_worker(num_workers):
-    worker_manager.set_workers_available(num_workers)
+@app.route("/status")
+def get_status():
+    return jsonify({"num_workers": worker_manager.get_number_of_workers(),
+                    "running_tasks": DBUtil.execute_command(config.db_name, "SELECT COUNT(*) FROM Results WHERE value = 'null'",
+                                         None, "ONE")[0]})
 
 
 @app.route("/job/<job_id>/status")
