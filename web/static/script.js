@@ -173,14 +173,15 @@ $(function () {
                         <li role="presentation" class="active"><a href="#status-'+obj+'" aria-controls="status" role="tab" data-toggle="tab">Status</a></li> \
                         <li role="presentation"><a href="#parameters-'+obj+'" aria-controls="parameters" role="tab" data-toggle="tab">Parameters</a></li>\
                         <li role="presentation"><a href="#results-'+obj+'" aria-controls="results" role="tab" data-toggle="tab">Results</a></li>\
-                        <li role="presentation"><a href="#graph-'+obj+'" aria-controls="settings" role="tab" data-toggle="tab">Graph</a> </li>\
+                        <li role="presentation"><a href="#lift_graph-'+obj+'" aria-controls="settings" role="tab" data-toggle="tab">Lift force graph</a> </li>\
+                        <li role="presentation"><a href="#drag_graph-'+obj+'" aria-controls="settings" role="tab" data-toggle="tab">Drag force graph</a> </li>\
                         </ul></div>\
                         <div class="tab-content">\
                         <div role="tabpanel" class="tab-pane active" id="status-'+obj+'">Status</div>\
                         <div role="tabpanel" class="tab-pane job_parameters" id="parameters-'+obj+'">Parameters</div>\
                         <div role="tabpanel" class="tab-pane" id="results-'+obj+'">Results</div>\
-                        <div role="tabpanel" class="tab-pane" id="graph-'+obj+'"><div id="lift_chart-'+obj+'" style="height:500px"></div></div>\
-                        <div role="tabpanel" class="tab-pane" id="graph-'+obj+'"><div id="drag_chart-'+obj+'" style="height:500px"></div></div>\
+                        <div role="tabpanel" class="tab-pane" id="lift_graph-'+obj+'"><div id="lift_chart-'+obj+'" style="height:500px"></div></div>\
+                        <div role="tabpanel" class="tab-pane" id="drag_graph-'+obj+'"><div id="drag_chart-'+obj+'" style="height:500px"></div></div>\
                         </div></div></div></div>'
                         element.append(htmlElement);
                         var lift_chart = new Highcharts.Chart({
