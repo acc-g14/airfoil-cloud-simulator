@@ -82,10 +82,21 @@ function updateJobResult(jobId) {
         var results_table = "<table class='table'>";
         results_table += "<tr><th>Angle</th><th>Lift</th><th>Drag</th></tr>";
 
-
+        min = Number.MAX_VALUE;
+        max = Number.MIN_VALUE;
+        liftData = [];
+        dragData = [];
         for (i=0; i<jobInfo.results.length; i++) {
             result = jobInfo.results[i];
             results_table += "<tr><td>" + result.angle + "</td><td>" + result.lift + "</td><td>" + result.drag + "</td></tr>";
+            liftData.push([result.angle, result.lift]);
+            dragData.push([result.angle, result.drag]);
+            if (result.angle < min) {
+                min = result.angle;
+            }
+            if (result.angle > max) {
+                max = result.angle;
+            }
         }
         results_table += "</table>";
         results_div.html(results_table);
@@ -104,7 +115,11 @@ function updateJobResult(jobId) {
         status_div.html(status_table);
 
 
-
+        c = chartMap[jobId]
+        console.log(c)
+        c.xAxis.setExtremes(min, max, false);
+        c.series[0].setData(liftData, false);
+        c.series[1].setData(dragData, true);
         console.log(data)
         setTimeout(function() {
             updateJobResult(jobId)
@@ -174,20 +189,22 @@ $(function () {
                             title: {
                                 text: 'Job: ' + obj
                             },
-                            //xAxis: {
-                            //    categories: ['Apples', 'Bananas', 'Oranges']
-                            //},
+                            xAxis: {
+                                title: {
+                                    text: 'Angle'
+                                }
+                            },
                             yAxis: {
                                 title: {
-                                    text: 'Fruit eaten'
+                                    text: ''
                                 }
                             },
                             series: [{
-                                name: 'Jane',
-                                data: [1, 0, 4]
+                                name: 'Lift force (avg)',
+                                data: []
                             }, {
-                                name: 'John',
-                                data: [5, 7, 3]
+                                name: 'Drag force (avg)',
+                                data: []
                             }]
                         });
                         chartMap[obj] = chart
