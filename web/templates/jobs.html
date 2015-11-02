@@ -1,0 +1,31 @@
+{% extends "dashboard.html" %}
+
+{% block workspace_block %}
+
+    <div id="new_job_div">
+        <input type="button" value="+New job" id="new_job_btn" class="btn btn-success">
+    </div>
+    <div id="sliding_new_job_div">
+        <form id="airfoil-form" action="">
+	        <input class="formText" type="text" id="n0" /><br />
+            <input class="formText" type="text" id="n1" /><br />
+            <input class="formText" type="text" id="n2" /><br />
+            <input class="formText" type="text" id="n3" /><br />
+            <input class="formText" type="text" id="min_angle" /><br />
+            <input class="formText" type="text" id="max_angle" /><br />
+            <input class="formText" type="text" id="step" /><br />
+            <input class="formText" type="text" id="num_nodes" /><br />
+            <input class="formText" type="text" id="refinement_level" /><br />
+            <input class="formText" type="text" id="num_samples" /><br />
+            <input class="formText" type="text" id="viscosity" /><br />
+            <input class="formText" type="text" id="speed" /><br />
+            <input class="formText" type="text" id="time" /><br />
+            <input type="submit" id="submitButton" value="Start Job" />
+        </form>
+    </div>
+
+    <div id="jobs_list" class="jobs_list list-group">
+       <!-- updated dynamically by JS -->
+    </div>
+
+{% endblock %}

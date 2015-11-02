@@ -29,6 +29,11 @@ class Config:
         self.backend = parser.get("server", "backend")
         self.broker = parser.get("server", "broker")
         self.crypt_obj = AES.new(self.key, AES.MODE_ECB, self.iv)
+        self.password = parser.get("server", "password")
+        self.username = parser.get("server", "username")
+        self.debug = parser.get("server", "debug")
+        self.secret_key = parser.get("server", "secret_key")
+
 
     @staticmethod
     def _read_file(filename, length):

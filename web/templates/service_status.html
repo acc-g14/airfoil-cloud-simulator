@@ -1,0 +1,14 @@
+{% extends "dashboard.html" %}
+
+{% block workspace_block %}
+    <table id="service_status_table">
+        <tr class="alt">
+            <td>Workers active: </td>
+            <td id="workers_active">?</td>
+        </tr>
+        <tr>
+            <td>Running tasks: </td>
+            <td id="running_tasks">?</td>
+        </tr>
+    </table>
+{% endblock %}

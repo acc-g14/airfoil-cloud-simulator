@@ -1,4 +1,5 @@
 from multiprocessing import Process
+import time
 from ComputeManager import ComputeManager
 from model.ComputeParameters import ComputeParameters
 from model.Job import Job
@@ -32,8 +33,11 @@ class DefaultComputeManager(ComputeManager):
         if job is None:
             raise ComputationException("No valid key specified")
         for task in job.tasks:
-            task.workertask.revoke()
-        pass
+            try:
+                task.workertask.revoke()
+            except Exception:
+                pass
+        self._jobs.pop(job_id)
 
     def get_status(self, job_id):
             job = self._jobs.get(job_id)
@@ -56,14 +60,25 @@ class DefaultComputeManager(ComputeManager):
             taskresults = []
             finished_tasks = 0
             total_tasks = len(job.tasks)
+            last_finished_task = 0
             for task in job.tasks:
                 if self._storage.has_result(task.model_params, task.compute_params):
-                    result = json.loads(self._storage.get_result(task.model_params, task.compute_params)[0])
+                    result_row = self._storage.get_result(task.model_params, task.compute_params)
+                    result = json.loads(result_row[0])
                     finished_tasks += 1
                     taskresults.append(result)
+                    if result_row[1] is not None and result_row[2] is not None:
+                        endtime = result_row[1] + result_row[2]
+                        if endtime > last_finished_task:
+                            last_finished_task = endtime
+            if last_finished_task < job.starttime:
+                runtime = 0.0
+            else:
+                runtime = last_finished_task - job.starttime
             return {"finished_tasks": finished_tasks,
                     "total_tasks": total_tasks,
-                    "results": taskresults}
+                    "results": taskresults,
+                    "runtime": runtime}
 
     def start_computation(self, user_params):
         """
@@ -79,7 +94,7 @@ class DefaultComputeManager(ComputeManager):
             # check
             self._start_task(task)
             tasklist.append(task)
-        job = Job(job_id, tasklist, [])
+        job = Job(job_id, tasklist, [], user_params, time.time())
         self._jobs[str(job_id)] = job
         # TODO: we don't want workers to be started here anymore
         #self._start_workers(job)
@@ -133,3 +148,6 @@ class DefaultComputeManager(ComputeManager):
         num_workers = self._worker_manager.get_number_of_workers()
         if num_not_finished > num_workers:
             self._worker_manager.set_workers_available(num_not_finished - num_workers)
+
+    def get_jobs(self):
+        return self._jobs
