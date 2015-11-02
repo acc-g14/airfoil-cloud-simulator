@@ -66,10 +66,6 @@ def get_status():
                                          None, "ONE")[0]})
 
 
-@app.route("/job/<job_id>/status")
-def get_status(job_id):
-    return jsonify(comp_manager.get_status(job_id))
-
 p = None
 b = None
 @app.route("/job/<job_id>/result")
