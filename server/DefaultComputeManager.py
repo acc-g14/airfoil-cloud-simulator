@@ -67,9 +67,10 @@ class DefaultComputeManager(ComputeManager):
                     result = json.loads(result_row[0])
                     finished_tasks += 1
                     taskresults.append(result)
-                    endtime = result_row[1] + result_row[2]
-                    if endtime > last_finished_task:
-                        last_finished_task = endtime
+                    if result_row[1] is not None and result_row[2] is not None:
+                        endtime = result_row[1] + result_row[2]
+                        if endtime > last_finished_task:
+                            last_finished_task = endtime
             if last_finished_task < job.starttime:
                 runtime = 0.0
             else:

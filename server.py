@@ -55,7 +55,7 @@ def create_job():
 @app.route("/job/<job_id>", methods=['DELETE'])
 def delete_job(job_id):
     comp_manager.stop_computation(job_id)
-    return ""
+    return jsonify("")
 
 
 @app.route("/worker/<int:num_workers>")
