@@ -137,7 +137,7 @@ function updateJobResult(jobId) {
                 $.ajax({
                     url: '/job/' + jobId,
                     type: 'DELETE',
-                    done: function () {
+                    success: function () {
                         console.log("element deleted");
                         $("#job-"+jobId).remove();
                     }
