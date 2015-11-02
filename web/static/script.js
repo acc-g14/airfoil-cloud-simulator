@@ -180,8 +180,8 @@ $(function () {
                         <div role="tabpanel" class="tab-pane active" id="status-'+obj+'">Status</div>\
                         <div role="tabpanel" class="tab-pane job_parameters" id="parameters-'+obj+'">Parameters</div>\
                         <div role="tabpanel" class="tab-pane" id="results-'+obj+'">Results</div>\
-                        <div role="tabpanel" class="tab-pane" id="lift_graph-'+obj+'"><div id="lift_chart-'+obj+'" style="height:500px;width:100%"></div></div>\
-                        <div role="tabpanel" class="tab-pane" id="drag_graph-'+obj+'"><div id="drag_chart-'+obj+'" style="height:500px;width:100%"></div></div>\
+                        <div role="tabpanel" class="tab-pane" id="lift_graph-'+obj+'"><div id="lift_chart-'+obj+'" style="height:500px"></div></div>\
+                        <div role="tabpanel" class="tab-pane" id="drag_graph-'+obj+'"><div id="drag_chart-'+obj+'" style="height:500px"></div></div>\
                         </div></div></div></div>'
                         element.append(htmlElement);
                         var lift_chart = new Highcharts.Chart({
