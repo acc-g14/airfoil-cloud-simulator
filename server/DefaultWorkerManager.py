@@ -52,7 +52,7 @@ class DefaultWorkerManager(WorkerManager):
                      " su -c 'celery -A workertasks worker -b amqp://cloudworker:worker@" + \
                      server_ip() + "//' ubuntu"
         for i in xrange(0, int(num)):
-            name = "g14worker" + str(uuid.uuid1)
+            name = "g14worker" + str(uuid.uuid1())
             server = self._nc.servers.create(name, image, flavor, userdata=cloud_init)
             DBUtil.execute_command(self._db_name,
                                    "INSERT INTO Workers(id, name, initialized, started, active) VALUES (?,?, 'false', ?, ?)",
