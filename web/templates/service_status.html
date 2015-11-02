@@ -2,17 +2,13 @@
 
 {% block workspace_block %}
     <table id="service_status_table">
-        <tr>
-            <td>Service Available: </td>
-            <td>True</td>
-        </tr>
         <tr class="alt">
             <td>Workers active: </td>
-            <td>?</td>
+            <td id="workers_active">?</td>
         </tr>
         <tr>
-            <td>Running jobs: </td>
-            <td>?</td>
+            <td>Running tasks: </td>
+            <td id="running_tasks">?</td>
         </tr>
     </table>
 {% endblock %}

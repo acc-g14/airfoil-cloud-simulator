@@ -60,7 +60,16 @@ $(document).ready(function () {
 
 });
 
-//TODO: Adjust for current implementation
+$(document).ready(function () {
+    setInterval(function () {
+        $.get("/status").success(function (data) {
+        $("#workers_active").html(data.num_workers);
+        $("#running_tasks").html(data.running_tasks);
+    })
+    }, 2000)
+})
+
+
 function updateJobResult(jobId) {
     var jobResult = $.get("job/" + jobId + "/result");
 
