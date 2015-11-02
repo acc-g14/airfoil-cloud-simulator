@@ -108,12 +108,31 @@ function updateJobResult(jobId) {
         var status_table = "<table class='table'>";
         var total_tasks = jobInfo["total_tasks"];
         var finished_tasks = jobInfo["finished_tasks"];
-        status_table += "<tr><th>Total tasks</th><th>Finished tasks</th></tr>";
-        status_table += "<tr><td>" + total_tasks + "</td><td>" + finished_tasks + "</td></tr>";
+
+        var runtime = jobInfo["runtime"];
+
+
+        status_table += "<tr><td>Total tasks</td><td>" + total_tasks + "</td></tr>";
+        status_table += "<tr><td>Finished tasks</td><td>" + finished_tasks + "</td>";
+        var progressObj = $('progress-' + jobId)
+        if(total_tasks==finished_tasks) {
+            status_table += "<tr><td>Runtime</td><td>" + runtime + "</td>";
+            progressObj.removeClass("label-warning")
+            progressObj.addClass("label-success")
+            progressObj.html("Finished")
+
+        } else {
+            status_table += "<tr><td>Runtime</td><td>In progress</td>";
+            progressObj.addClass("label-warning")
+            progressObj.removeClass("label-success")
+            progressObj.html("In Progress")
+        }
+
+
+
         status_table += "</table>";
 
         status_div.html(status_table);
-
 
         c = chartMap[jobId]
         console.log(c)
@@ -166,7 +185,7 @@ $(function () {
                 if (listElements.indexOf(obj) == -1) {
 
                     var htmlElement = '<div class="job_item list-group-item" id="job-' + obj + '">';
-                    htmlElement += '<div class="panel"><div class="job_id panel-heading"><a>' + obj + '</a></div>'
+                    htmlElement += '<div class="panel"><div class="job_id panel-heading"><a>' + obj + '</a><span id="progress-'+obj+'" class="label"></span></div>'
                     htmlElement += '<div class="job_item_info panel-body" style="display: none">'
                     htmlElement +=
                         '<div><ul class="nav nav-tabs" role="tablist"> \
