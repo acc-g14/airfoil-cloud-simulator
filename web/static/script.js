@@ -114,7 +114,7 @@ function updateJobResult(jobId) {
 
         status_table += "<tr><td>Total tasks</td><td>" + total_tasks + "</td></tr>";
         status_table += "<tr><td>Finished tasks</td><td>" + finished_tasks + "</td>";
-        var progressObj = $('progress-' + jobId)
+        var progressObj = $('#progress-' + jobId)
         if(total_tasks==finished_tasks) {
             status_table += "<tr><td>Runtime</td><td>" + runtime + "</td>";
             progressObj.removeClass("label-warning")
