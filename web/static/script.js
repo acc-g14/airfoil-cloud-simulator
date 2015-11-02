@@ -132,12 +132,14 @@ function updateJobResult(jobId) {
         status_table += "<button type='button' class='btn btn-danger' id='delete-"+jobId+"' >Delete job</button>";
 
         status_div.html(status_table);
+
         $("#delete-"+jobId).click(function() {
                 $.ajax({
                     url: '/job/' + jobId,
                     type: 'DELETE',
-                    success: function () {
-                        console.log("element deleted")
+                    done: function () {
+                        console.log("element deleted");
+                        $("#job-"+jobId).remove();
                     }
                 })
         }
